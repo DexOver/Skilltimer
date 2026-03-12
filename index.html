@@ -301,7 +301,6 @@ tbody tr:hover{background:rgba(0,212,255,0.04)}
       <div><label class="field-label">⚡ Навык (ч)</label><input type="number" id="skillHours" value="6" min="0.5" max="72" step="0.5" inputmode="decimal"></div>
       <div><label class="field-label">⏳ Кулдаун (ч)</label><input type="number" id="cdHours" value="11" min="0.5" max="72" step="0.5" inputmode="decimal"></div>
       <div><label class="field-label">📦 Сбор (мин)</label><input type="number" id="gatherMins" value="20" min="1" max="180" step="1" inputmode="numeric"></div>
-      <div><label class="field-label">✨ Новый (мин)</label><input type="number" id="newSkillMins" value="20" min="1" max="180" step="1" inputmode="numeric"></div>
     </div>
     <div class="toggle-row">
       <label class="toggle"><input type="checkbox" id="skipNight" onchange="toggleNightCustom()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
@@ -546,7 +545,7 @@ function toggleNightCustom(){
 }
 
 function saveSettings(silent){
-  const s={startDate:document.getElementById('startDate').value,startTime:document.getElementById('startTime').value,days:document.getElementById('daysCount').value,skill:document.getElementById('skillHours').value,cd:document.getElementById('cdHours').value,gather:document.getElementById('gatherMins').value,newSkill:document.getElementById('newSkillMins').value,skipNight:document.getElementById('skipNight').checked,nightStart:document.getElementById('nightStart').value,nightEnd:document.getElementById('nightEnd').value,theme:currentTheme};
+  const s={startDate:document.getElementById('startDate').value,startTime:document.getElementById('startTime').value,days:document.getElementById('daysCount').value,skill:document.getElementById('skillHours').value,cd:document.getElementById('cdHours').value,gather:document.getElementById('gatherMins').value,skipNight:document.getElementById('skipNight').checked,nightStart:document.getElementById('nightStart').value,nightEnd:document.getElementById('nightEnd').value,theme:currentTheme};
   try{localStorage.setItem('skillTimerSettings',JSON.stringify(s));}catch(e){}
   if(!silent) showToast('✓ Настройки сохранены');
 }
@@ -560,7 +559,7 @@ function loadSettings(){
     if(s.skill) document.getElementById('skillHours').value=s.skill;
     if(s.cd) document.getElementById('cdHours').value=s.cd;
     if(s.gather) document.getElementById('gatherMins').value=s.gather;
-    if(s.newSkill) document.getElementById('newSkillMins').value=s.newSkill;
+    // newSkillMins field removed
     if(s.nightStart) document.getElementById('nightStart').value=s.nightStart;
     if(s.nightEnd) document.getElementById('nightEnd').value=s.nightEnd;
     if(s.skipNight){document.getElementById('skipNight').checked=true;toggleNightCustom();}
@@ -623,7 +622,7 @@ function generate(){
   SKILL=parseFloat(document.getElementById('skillHours').value)||6;
   COOLDOWN=parseFloat(document.getElementById('cdHours').value)||11;
   GATHER_MAX=Math.max(1,+document.getElementById('gatherMins').value||20);
-  NEW_SKILL_COLLECT=Math.max(1,+document.getElementById('newSkillMins').value||20);
+  NEW_SKILL_COLLECT=20;
   document.getElementById('statSkill').textContent=SKILL+'h';
   document.getElementById('statCD').textContent=COOLDOWN+'h';
   _buildEvents([{skill:SKILL,cd:COOLDOWN}],getStartDateTime(),days,skipNight);
@@ -632,7 +631,7 @@ function generateMulti(){
   const skipNight=document.getElementById('skipNight').checked;
   const days=Math.max(1,Math.min(365,+document.getElementById('daysCount').value||30));
   GATHER_MAX=Math.max(1,+document.getElementById('gatherMins').value||20);
-  NEW_SKILL_COLLECT=Math.max(1,+document.getElementById('newSkillMins').value||20);
+  NEW_SKILL_COLLECT=20;
   _buildEvents(multiSkills.map(s=>({skill:s.skill,cd:s.cd,name:s.name,color:s.color})),getStartDateTime(),days,skipNight);
   showToast('✓ '+multiSkills.length+' навыков | '+allEvents.length+' запусков');
 }
@@ -1035,7 +1034,7 @@ function exportPNG(){
   ctx.fillStyle=th.accent; ctx.font='bold 18px sans-serif'; ctx.fillText('SKILL TIMER - Расписание',16,32);
   ctx.fillStyle=isDark?'#64748b':'#94a3b8'; ctx.font='11px monospace'; ctx.fillText(new Date().toLocaleString('ru-RU'),W-180,32);
   ctx.strokeStyle=isDark?'#1e2d50':'#cbd5e1'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,hH); ctx.lineTo(W,hH); ctx.stroke();
-  const cols=['#','Запуск','Навык','КД','Сбор','Новый',''],cw=[35,105,105,105,115,115,40];
+  const cols=['#','Запуск + дата','Навык','КД','Сбор','Новый',''],cw=[30,160,95,95,100,100,40];
   let cx=8; cols.forEach((c,i)=>{ctx.fillStyle=isDark?'#64748b':'#94a3b8';ctx.font='bold 10px sans-serif';ctx.fillText(c,cx,hH-8);cx+=cw[i];});
   const colors=[null,th.accent,'#a78bfa',isDark?'#f59e0b':'#d97706',isDark?'#10b981':'#059669',isDark?'#f472b6':'#db2777',null];
   rows.forEach((r,ri)=>{
@@ -1043,7 +1042,8 @@ function exportPNG(){
     if(ri%2===0){ctx.fillStyle=isDark?'rgba(255,255,255,0.02)':'rgba(0,0,0,0.02)';ctx.fillRect(0,y,W,rH);}
     ctx.strokeStyle=isDark?'#1e2d50':'#e2e8f0'; ctx.lineWidth=0.5; ctx.beginPath(); ctx.moveTo(0,y+rH); ctx.lineTo(W,y+rH); ctx.stroke();
     const st=journal[r.idx];
-    const vals=[r.idx,fmt(r.launch),fmt(r.skillEnd),fmt(r.cdEnd),fmt(r.gatherEnd),fmt(r.newSkillEnd),st==='done'?'OK':st==='skipped'?'SKIP':''];
+    const dayStr=r.launch.toLocaleDateString('ru-RU',{weekday:'short',day:'2-digit',month:'short'});
+    const vals=[r.idx,fmt(r.launch)+' '+dayStr,fmt(r.skillEnd),fmt(r.cdEnd),fmt(r.gatherEnd),fmt(r.newSkillEnd),st==='done'?'OK':st==='skipped'?'SKIP':''];
     cx=8; vals.forEach((v,i)=>{ctx.fillStyle=colors[i]||(isDark?'#e2e8f0':'#0f172a');ctx.font=(i===0?'10':'12')+'px monospace';ctx.fillText(v,cx,y+rH/2+5);cx+=cw[i];});
   });
   cvs.toBlob(blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='skill-schedule.png';a.click();showToast('✓ PNG сохранён');});
