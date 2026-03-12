@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0f1e">
+<link rel="manifest" id="pwaManifest">
+<title>Skill Timer</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0f1e;--bg2:#0f1729;--card:#131c35;--border:#1e2d50;--accent:#00d4ff;--accent2:#7c3aed;--accent3:#10b981;--warn:#f59e0b;--pink:#f472b6;--text:#e2e8f0;--muted:#64748b;--glow:0 0 20px rgba(0,212,255,0.3);--shadow:0 2px 8px rgba(0,0,0,0.5);--grad1:rgba(0,212,255,0.06);--grad2:rgba(124,58,237,0.05)}
+[data-theme="midnight"]{--bg:#0d0a1e;--bg2:#130f2a;--card:#1a1535;--border:#2d2460;--accent:#a78bfa;--accent2:#ec4899;--accent3:#34d399;--warn:#fbbf24;--pink:#f472b6;--text:#ede9fe;--muted:#6b7280;--glow:0 0 20px rgba(167,139,250,0.35);--shadow:0 2px 8px rgba(0,0,0,0.5);--grad1:rgba(167,139,250,0.07);--grad2:rgba(236,72,153,0.05)}
+[data-theme="forest"]{--bg:#091510;--bg2:#0e1f15;--card:#132a1a;--border:#1e4428;--accent:#4ade80;--accent2:#22d3ee;--accent3:#a3e635;--warn:#facc15;--pink:#f472b6;--text:#dcfce7;--muted:#6b7280;--glow:0 0 20px rgba(74,222,128,0.3);--shadow:0 2px 8px rgba(0,0,0,0.5);--grad1:rgba(74,222,128,0.06);--grad2:rgba(34,211,238,0.05)}
+[data-theme="lava"]{--bg:#1a0a05;--bg2:#200d06;--card:#271008;--border:#4a1a08;--accent:#fb923c;--accent2:#ef4444;--accent3:#fbbf24;--warn:#facc15;--pink:#f472b6;--text:#fff1eb;--muted:#92400e;--glow:0 0 20px rgba(251,146,60,0.35);--shadow:0 2px 8px rgba(0,0,0,0.5);--grad1:rgba(251,146,60,0.08);--grad2:rgba(239,68,68,0.06)}
+[data-theme="arctic"]{--bg:#f0f7ff;--bg2:#ffffff;--card:#ffffff;--border:#bfdbfe;--accent:#2563eb;--accent2:#7c3aed;--accent3:#059669;--warn:#d97706;--pink:#db2777;--text:#0f172a;--muted:#64748b;--glow:0 0 20px rgba(37,99,235,0.15);--shadow:0 2px 8px rgba(0,0,0,0.08);--grad1:rgba(37,99,235,0.05);--grad2:rgba(124,58,237,0.04)}
+[data-theme="sand"]{--bg:#fdf6e3;--bg2:#fffdf7;--card:#fffdf7;--border:#e8d9b0;--accent:#b45309;--accent2:#7c3aed;--accent3:#15803d;--warn:#d97706;--pink:#be185d;--text:#1c1008;--muted:#78716c;--glow:0 0 20px rgba(180,83,9,0.15);--shadow:0 2px 8px rgba(0,0,0,0.08);--grad1:rgba(180,83,9,0.05);--grad2:rgba(124,58,237,0.04)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100%;overflow-x:hidden;transition:background .3s,color .3s}
+.grid-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background-image:linear-gradient(rgba(128,128,128,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(128,128,128,0.05) 1px,transparent 1px);background-size:40px 40px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 60% 40% at 20% 10%,var(--grad1) 0%,transparent 70%),radial-gradient(ellipse 40% 30% at 80% 80%,var(--grad2) 0%,transparent 70%)}
+.container{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:18px 14px 60px}
+header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.logo-icon{width:38px;height:38px;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:var(--glow)}
+h1{font-size:clamp(16px,4.5vw,24px);font-weight:700;letter-spacing:2px;text-transform:uppercase;background:linear-gradient(90deg,var(--accent),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subtitle{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+.now-time{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted)}
+.icon-btn{background:var(--card);border:1px solid var(--border);border-radius:7px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:border-color .2s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.icon-btn:hover{border-color:var(--accent)}
+.tabs{display:flex;gap:3px;margin-bottom:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:4px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{flex:1;min-width:0;padding:8px 5px;border:none;background:transparent;color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;border-radius:7px;cursor:pointer;transition:background .2s,color .2s;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+.tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:14px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 7px;text-align:center;box-shadow:var(--shadow)}
+.stat-val{font-family:'Share Tech Mono',monospace;font-size:clamp(12px,3vw,18px);color:var(--accent);line-height:1}
+.stat-label{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:1px}
+.stat-card.green .stat-val{color:var(--accent3)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:15px;margin-bottom:13px;box-shadow:var(--shadow)}
+.controls-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:10px}
+@media(min-width:540px){.controls-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:780px){.controls-grid{grid-template-columns:repeat(5,1fr)}}
+.field-label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px}
+input[type="time"],input[type="number"],input[type="text"],input[type="date"]{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:16px;padding:8px 9px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+input:focus{border-color:var(--accent)}
+input[type="time"]::-webkit-calendar-picker-indicator,input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.5);cursor:pointer}
+[data-theme="arctic"] input::-webkit-calendar-picker-indicator,[data-theme="sand"] input::-webkit-calendar-picker-indicator{filter:none}
+.toggle-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px solid var(--border)}
+.toggle{position:relative;width:42px;height:22px;flex-shrink:0}
+.toggle input{display:none}
+.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:11px;cursor:pointer;transition:background .3s}
+.toggle-thumb{position:absolute;left:3px;top:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform .3s;pointer-events:none}
+.toggle input:checked~.toggle-track{background:var(--accent2)}
+.toggle input:checked~.toggle-thumb{transform:translateX(20px)}
+.toggle-label{font-size:13px;color:var(--text);cursor:pointer;flex:1}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.btn{display:flex;align-items:center;justify-content:center;gap:5px;padding:11px 10px;border-radius:9px;border:none;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-primary:active,.btn-secondary:active,.btn-ghost:active,.btn-warn:active{transform:scale(.97)}
+.btn-secondary{background:var(--bg2);color:var(--accent3);border:1px solid var(--accent3)}
+.btn-ghost{background:var(--bg2);color:var(--muted);border:1px solid var(--border);font-size:12px}
+.btn-warn{background:var(--bg2);color:var(--warn);border:1px solid var(--warn);font-size:12px}
+.section-title{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:11px;display:flex;align-items:center;gap:7px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.countdown-widget{background:linear-gradient(135deg,rgba(0,212,255,0.08),rgba(124,58,237,0.08));border:1px solid rgba(0,212,255,0.2);border-radius:13px;padding:16px;margin-bottom:13px;text-align:center;display:none}
+.countdown-label{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:6px}
+.countdown-time{font-family:'Share Tech Mono',monospace;font-size:clamp(28px,8vw,48px);color:var(--accent);letter-spacing:4px;line-height:1}
+.countdown-event{font-size:12px;color:var(--muted);margin-top:5px}
+.countdown-progress{width:100%;height:4px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden}
+.countdown-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width .5s}
+.presets-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.preset-chip{padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.preset-chip:hover{border-color:var(--accent);color:var(--accent)}
+.skill-row{display:grid;grid-template-columns:1fr 80px 80px 32px;gap:7px;align-items:end}
+.timeline-card{display:none}
+canvas{width:100%;display:block;border-radius:6px;background:var(--bg2)}
+.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:7px}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+.heatmap-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.heatmap-grid{display:inline-flex;gap:3px}
+.heatmap-col{display:flex;flex-direction:column;gap:3px}
+.heatmap-cell{width:13px;height:13px;border-radius:2px;background:var(--border);flex-shrink:0}
+.heatmap-cell.l1{background:rgba(0,212,255,0.25)}.heatmap-cell.l2{background:rgba(0,212,255,0.5)}.heatmap-cell.l3{background:rgba(0,212,255,0.75)}.heatmap-cell.l4{background:rgba(0,212,255,1)}
+[data-theme="arctic"] .heatmap-cell.l1,[data-theme="sand"] .heatmap-cell.l1{background:rgba(2,132,199,0.2)}
+[data-theme="arctic"] .heatmap-cell.l2,[data-theme="sand"] .heatmap-cell.l2{background:rgba(2,132,199,0.5)}
+[data-theme="arctic"] .heatmap-cell.l3,[data-theme="sand"] .heatmap-cell.l3{background:rgba(2,132,199,0.75)}
+[data-theme="arctic"] .heatmap-cell.l4,[data-theme="sand"] .heatmap-cell.l4{background:rgba(2,132,199,1)}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.cal-nav-btn{background:var(--bg2);border:1px solid var(--border);color:var(--accent);font-size:17px;width:32px;height:32px;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}
+.cal-month-title{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dow{text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);padding:3px 0 6px}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:clamp(10px,2.6vw,13px);border:1px solid transparent;transition:transform .12s,background .12s;gap:2px}
+.cal-day.empty{opacity:0;pointer-events:none}.cal-day.no-events{color:var(--muted);opacity:.4}
+.cal-day.today{border-color:var(--muted)}.cal-day.has-events{background:rgba(0,212,255,0.09);border-color:rgba(0,212,255,0.28);color:var(--accent);cursor:pointer}
+.cal-day.has-events:active{transform:scale(.92)}.cal-dot-row{display:flex;gap:2px;justify-content:center}.cal-dot{width:4px;height:4px;border-radius:50%;background:var(--accent)}
+.table-card{display:none}
+.table-header{padding:11px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+.count-badge{background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.3);color:var(--accent);font-family:'Share Tech Mono',monospace;font-size:11px;padding:2px 9px;border-radius:20px}
+.search-box{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;padding:7px 11px;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.search-box:focus{border-color:var(--accent)}
+.vscroll-outer{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.vscroll-wrap{height:400px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;min-width:500px;border-collapse:collapse}
+thead tr{background:var(--bg2);position:sticky;top:0;z-index:2}
+th{padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);white-space:nowrap;font-weight:600}
+td{padding:7px 10px;font-family:'Share Tech Mono',monospace;font-size:12px;border-top:1px solid var(--border);white-space:nowrap}
+tbody tr:hover{background:rgba(0,212,255,0.04)}
+.num-cell{color:var(--muted);font-size:10px}.launch-cell{color:var(--accent)}.skill-cell{color:#a78bfa}.cd-cell{color:var(--warn)}.gather-cell{color:var(--accent3)}.newskill-cell{color:var(--pink)}.status-cell{text-align:center;cursor:pointer}
+.day-sep td{background:var(--bg2);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:2px;padding:4px 10px;border-top:1px solid var(--border);font-family:'Rajdhani',sans-serif;font-weight:600}
+.row-done td:not(.status-cell){opacity:.5}.row-done .launch-cell{text-decoration:line-through}
+.row-skipped td:not(.status-cell){opacity:.4}.row-skipped .launch-cell{text-decoration:line-through;color:var(--warn)}
+.notif-banner{display:flex;align-items:center;gap:10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:9px;padding:10px 13px;margin-bottom:10px;font-size:13px;color:var(--accent3)}
+.notif-banner.denied{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3);color:#f87171}
+.chart-bar-wrap{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.chart-bar-row{display:flex;align-items:center;gap:8px}
+.chart-bar-label{width:65px;color:var(--muted);font-family:'Share Tech Mono',monospace;font-size:10px;flex-shrink:0;text-align:right}
+.chart-bar-bg{flex:1;height:20px;background:var(--bg2);border-radius:4px;overflow:hidden;position:relative;border:1px solid var(--border)}
+.chart-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s ease}
+.chart-bar-val{position:absolute;right:7px;top:50%;transform:translateY(-50%);font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text)}
+.record-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.record-card{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:10px 12px}
+.record-val{font-family:'Share Tech Mono',monospace;font-size:22px;color:var(--accent);line-height:1}
+.record-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+.theme-popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0 12px 16px}
+.theme-popup-overlay.open{display:flex;animation:fadeIn .18s ease}
+.theme-popup{background:var(--card);border:1px solid var(--border);border-radius:18px;width:100%;max-width:420px;padding:18px;animation:slideUp .22s ease}
+.theme-popup-title{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.theme-swatch{border-radius:11px;border:2px solid transparent;cursor:pointer;overflow:hidden;transition:border-color .15s,transform .15s;-webkit-tap-highlight-color:transparent}
+.theme-swatch:hover{transform:scale(1.04)}.theme-swatch.selected{border-color:var(--accent)}
+.theme-swatch-preview{height:44px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.theme-swatch-label{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;text-align:center;padding:5px 4px;letter-spacing:1px;text-transform:uppercase}
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;display:none;align-items:flex-end;justify-content:center;padding:0 12px 14px}
+.popup-overlay.open{display:flex;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.popup{background:var(--card);border:1px solid var(--border);border-radius:17px;width:100%;max-width:460px;max-height:74vh;overflow-y:auto;padding:17px;animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(28px);opacity:0}to{transform:translateY(0);opacity:1}}
+.popup-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.popup-title{font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--accent)}
+.popup-close{background:var(--bg2);border:1px solid var(--border);color:var(--muted);width:27px;height:27px;border-radius:50%;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.popup-event{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:8px;padding:10px 12px;margin-bottom:6px}
+.popup-event-num{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.popup-phases{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.popup-phase{display:flex;flex-direction:column;gap:1px}
+.popup-phase-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.popup-phase-val{font-family:'Share Tech Mono',monospace;font-size:13px}
+.catchup-banner{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:9px;padding:10px 13px;margin-bottom:12px;font-size:12px;color:var(--accent3);display:none}
+.pwa-banner{display:none;align-items:center;gap:10px;background:rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.3);border-radius:9px;padding:10px 13px;margin-bottom:12px;font-size:12px;color:#a78bfa}
+.pwa-banner.show{display:flex}
+/* countdown controls */
+.countdown-controls{display:flex;justify-content:center;gap:10px;margin-top:12px}
+.cd-btn{background:var(--bg2);border:1px solid var(--border);color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;padding:6px 16px;border-radius:20px;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;letter-spacing:1px}
+.cd-btn:hover{border-color:var(--accent);color:var(--accent)}
+.cd-btn.active{background:rgba(0,212,255,0.15);border-color:var(--accent);color:var(--accent)}
+.cd-btn-danger{color:var(--warn)!important;border-color:var(--warn)!important}
+.cd-btn-danger:hover{background:rgba(245,158,11,0.12)!important}
+/* fullscreen timer */
+.fs-timer-overlay{position:fixed;inset:0;z-index:500;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center}
+.fs-timer-overlay.open{display:flex}
+.fs-timer-label{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:var(--muted)}
+.fs-timer-time{font-family:'Share Tech Mono',monospace;font-size:clamp(52px,16vw,110px);color:var(--accent);letter-spacing:6px;line-height:1;text-shadow:var(--glow)}
+.fs-timer-event{font-size:clamp(14px,3.5vw,22px);color:var(--text);font-weight:600;letter-spacing:1px;min-height:28px}
+.fs-timer-progress{width:min(400px,90vw);height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:4px}
+.fs-timer-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;transition:width .5s}
+.fs-timer-next{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--muted);margin-top:4px}
+.fs-timer-close{position:absolute;top:18px;right:18px;background:var(--card);border:1px solid var(--border);color:var(--muted);width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.fs-timer-dots{display:flex;gap:12px;margin-top:8px}
+.fs-timer-dot{width:10px;height:10px;border-radius:50%;background:var(--border)}
+.fs-timer-dot.active{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+/* custom night window */
+.night-custom{display:none;align-items:center;gap:7px;margin-top:9px;flex-wrap:wrap}
+.night-custom.show{display:flex}
+.night-time-input{width:90px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:16px;padding:6px 8px;outline:none;-webkit-appearance:none}
+.night-time-input:focus{border-color:var(--accent)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--accent3);color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;padding:9px 18px;border-radius:30px;z-index:300;transition:transform .28s ease;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.live-dot{width:7px;height:7px;background:var(--accent3);border-radius:50%;display:inline-block;animation:pulseDot 1.5s infinite}
+@keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.ls-wrap{display:contents}.ls-left,.ls-right{display:contents}
+@media(orientation:landscape) and (max-height:520px){
+  .container{padding:9px 12px 18px;max-width:100%}
+  header{margin-bottom:9px;padding-bottom:9px} h1{font-size:16px} .subtitle{display:none}
+  .logo-icon{width:28px;height:28px;font-size:14px}
+  .ls-wrap{display:grid;grid-template-columns:250px 1fr;gap:11px;align-items:start}
+  .ls-left,.ls-right{display:flex;flex-direction:column;gap:9px}
+  .stats-bar,.card,.timeline-card,.table-card,.countdown-widget{margin-bottom:0}
+  .controls-grid{grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+  canvas{height:42px !important} .vscroll-wrap{height:250px}
+  th{font-size:9px;padding:5px 8px} td{font-size:11px;padding:5px 8px} .countdown-time{font-size:28px}
+}
+@media(orientation:landscape) and (min-height:520px){
+  .ls-wrap{display:grid;grid-template-columns:310px 1fr;gap:16px;align-items:start}
+  .ls-left,.ls-right{display:flex;flex-direction:column;gap:13px}
+  .stats-bar,.card,.timeline-card,.table-card,.countdown-widget{margin-bottom:0}
+}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="container">
+
+<header>
+  <div class="logo-icon">⚡</div>
+  <div><h1>Skill Timer</h1><div class="subtitle">v5.0 · SCHEDULE OPTIMIZER</div></div>
+  <div class="header-right">
+    <div class="now-time" id="nowClock"></div>
+    <button class="icon-btn" onclick="openFsTimer()" title="Полноэкранный таймер">⏱</button>
+    <button class="icon-btn" id="notifBtn" onclick="toggleNotifications()" title="Уведомления">🔔</button>
+    <button class="icon-btn" onclick="openThemePicker()" title="Тема">🎨</button>
+  </div>
+</header>
+
+<div class="pwa-banner" id="pwaBanner">
+  📲 Установить как приложение
+  <button class="btn btn-ghost" style="margin-left:auto;padding:4px 10px;font-size:11px" onclick="installPWA()">Установить</button>
+  <button class="icon-btn" style="width:24px;height:24px;font-size:11px;flex-shrink:0" onclick="document.getElementById('pwaBanner').classList.remove('show')">✕</button>
+</div>
+
+<div class="notif-banner" id="notifBanner" style="display:none"></div>
+
+<div class="stats-bar">
+  <div class="stat-card"><div class="stat-val" id="statSkill">6h</div><div class="stat-label">Навык</div></div>
+  <div class="stat-card"><div class="stat-val" id="statCD">11h</div><div class="stat-label">Кулдаун</div></div>
+  <div class="stat-card"><div class="stat-val" id="statTotal">—</div><div class="stat-label">Запусков</div></div>
+  <div class="stat-card green"><div class="stat-val" id="statDone">—</div><div class="stat-label">✓ Выполнено</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('schedule')">📋 План</button>
+  <button class="tab" onclick="switchTab('journal')">📓 Журнал</button>
+  <button class="tab" onclick="switchTab('stats')">📊 Стат.</button>
+  <button class="tab" onclick="switchTab('skills')">⚔️ Навыки</button>
+  <button class="tab" onclick="switchTab('presets')">💾 Пресеты</button>
+</div>
+
+<div class="countdown-widget" id="countdownWidget">
+  <div class="countdown-label" id="countdownLabel">До следующего события</div>
+  <div class="countdown-time" id="countdownTime">--:--:--</div>
+  <div class="countdown-event" id="countdownEvent"></div>
+  <div class="countdown-progress"><div class="countdown-bar" id="countdownBar" style="width:0%"></div></div>
+  <div class="countdown-controls">
+    <button class="cd-btn" id="cdPauseBtn" onclick="toggleCountdownPause()" title="Пауза/Продолжить">⏸</button>
+    <button class="cd-btn cd-btn-danger" onclick="resetCountdown()" title="Сбросить расписание">✕ Сбросить</button>
+  </div>
+</div>
+
+<div class="catchup-banner" id="catchupBanner"></div>
+
+<div class="ls-wrap">
+<div class="ls-left">
+
+<!-- SCHEDULE -->
+<div id="tabSchedule">
+  <div class="card">
+    <div class="controls-grid">
+      <div><label class="field-label">📆 Дата начала</label><input type="date" id="startDate"></div>
+      <div><label class="field-label">🕐 Время запуска</label><input type="time" id="startTime" value="05:30"></div>
+      <div><label class="field-label">Дней</label><input type="number" id="daysCount" value="30" min="1" max="365" inputmode="numeric"></div>
+      <div><label class="field-label">⚡ Навык (ч)</label><input type="number" id="skillHours" value="6" min="0.5" max="72" step="0.5" inputmode="decimal"></div>
+      <div><label class="field-label">⏳ Кулдаун (ч)</label><input type="number" id="cdHours" value="11" min="0.5" max="72" step="0.5" inputmode="decimal"></div>
+      <div><label class="field-label">📦 Сбор (мин)</label><input type="number" id="gatherMins" value="20" min="1" max="180" step="1" inputmode="numeric"></div>
+      <div><label class="field-label">✨ Новый (мин)</label><input type="number" id="newSkillMins" value="20" min="1" max="180" step="1" inputmode="numeric"></div>
+    </div>
+    <div class="toggle-row">
+      <label class="toggle"><input type="checkbox" id="skipNight" onchange="toggleNightCustom()"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      <label class="toggle-label" for="skipNight">🌙 Пропустить ночное окно</label>
+    </div>
+    <div class="night-custom" id="nightCustom">
+      <span style="font-size:12px;color:var(--muted)">С</span>
+      <input type="time" class="night-time-input" id="nightStart" value="23:00">
+      <span style="font-size:12px;color:var(--muted)">до</span>
+      <input type="time" class="night-time-input" id="nightEnd" value="06:00">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="generate()">▶ Расписание</button>
+      <button class="btn btn-secondary" onclick="downloadICS()">↓ ICS файл</button>
+    </div>
+    <div class="btn-row" style="margin-top:7px">
+      <button class="btn btn-ghost" onclick="exportPNG()">📸 PNG</button>
+      <button class="btn btn-ghost" onclick="exportCSV()">📤 CSV</button>
+    </div>
+    <div class="btn-row" style="margin-top:7px">
+      <button class="btn btn-ghost" onclick="saveSettings()">💾 Сохранить</button>
+    </div>
+  </div>
+  <div class="card" id="calCard" style="display:none">
+    <div class="section-title">📅 Календарь</div>
+    <div class="cal-nav">
+      <button class="cal-nav-btn" onclick="calPrev()">‹</button>
+      <div class="cal-month-title" id="calTitle"></div>
+      <button class="cal-nav-btn" onclick="calNext()">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+</div>
+
+<!-- JOURNAL -->
+<div id="tabJournal" style="display:none">
+  <div class="card">
+    <div class="section-title">📓 Журнал запусков</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Отмечай фактические запуски. Кнопка ⏭ пропускает ближайший и сдвигает расписание.</p>
+    <div id="journalEmpty" style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0">Сначала сгенерируйте расписание</div>
+    <div id="journalList"></div>
+    <div class="btn-row" id="journalActions" style="display:none;margin-top:12px">
+      <button class="btn btn-warn" onclick="skipNext()">⏭ Пропустить следующий</button>
+      <button class="btn btn-ghost" onclick="clearJournal()">🗑 Сбросить журнал</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div id="tabStats" style="display:none">
+  <div class="card" id="statsEmpty" style="text-align:center;color:var(--muted);font-size:13px;padding:20px">Сначала сгенерируйте расписание и отметьте запуски в журнале</div>
+  <div id="statsContent" style="display:none">
+    <div class="card">
+      <div class="section-title">🏆 Рекорды</div>
+      <div class="record-grid">
+        <div class="record-card"><div class="record-val" id="recStreak">0</div><div class="record-lbl">🔥 Серия дней</div></div>
+        <div class="record-card"><div class="record-val" id="recTotal">0</div><div class="record-lbl">✓ Всего выполнено</div></div>
+        <div class="record-card"><div class="record-val" id="recBestDay">0</div><div class="record-lbl">📅 Лучший день</div></div>
+        <div class="record-card"><div class="record-val" id="recRate">0%</div><div class="record-lbl">📈 % выполнения</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">📊 По дням (последние 14)</div>
+      <div class="chart-bar-wrap" id="statsBarChart"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SKILLS -->
+<div id="tabSkills" style="display:none">
+  <div class="card">
+    <div class="section-title">⚔️ Несколько навыков</div>
+    <div class="skill-list" id="skillList"></div>
+    <button class="btn btn-ghost" onclick="addSkillRow()" style="width:100%;margin-top:4px">+ Добавить навык</button>
+    <div class="btn-row" style="margin-top:10px">
+      <button class="btn btn-primary" onclick="generateMulti()">▶ Все навыки</button>
+      <button class="btn btn-secondary" onclick="downloadICS()">↓ ICS файл</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRESETS -->
+<div id="tabPresets" style="display:none">
+  <div class="card">
+    <div class="section-title">💾 Сохранённые пресеты</div>
+    <div class="presets-row" id="presetsList"></div>
+    <div style="margin-top:12px">
+      <label class="field-label">Название пресета</label>
+      <input type="text" id="presetName" placeholder="Например: Навык добычи" style="margin-bottom:8px">
+      <button class="btn btn-primary" onclick="savePreset()" style="width:100%">💾 Сохранить текущие настройки</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /ls-left -->
+<div class="ls-right">
+
+<div class="card timeline-card" id="timelineCard">
+  <div class="section-title"><span class="live-dot"></span> Временная шкала</div>
+  <canvas id="chart" style="height:60px"></canvas>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div>Запуск</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Навык</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Кулдаун</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Сбор</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f472b6"></div>Новый</div>
+  </div>
+</div>
+
+<div class="card" id="heatmapCard" style="display:none">
+  <div class="section-title">📅 Тепловая карта</div>
+  <div class="heatmap-wrap"><div class="heatmap-grid" id="heatmapGrid"></div></div>
+  <div style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:10px;color:var(--muted)">
+    Меньше <div class="heatmap-cell"></div><div class="heatmap-cell l1"></div><div class="heatmap-cell l2"></div><div class="heatmap-cell l3"></div><div class="heatmap-cell l4"></div> Больше
+  </div>
+</div>
+
+<div class="table-card card" id="tableCard">
+  <div class="table-header">
+    <div class="section-title" style="margin:0;flex:1">Расписание</div>
+    <span class="count-badge" id="countBadge">0</span>
+    <input class="search-box" id="searchBox" placeholder="🔍 Поиск..." oninput="onSearch()" inputmode="search">
+  </div>
+  <div class="vscroll-outer">
+    <div class="vscroll-wrap" id="vscrollWrap">
+      <table>
+        <thead><tr><th>#</th><th>Запуск</th><th>Навык■</th><th>КД■</th><th>Сбор■</th><th>Новый</th><th>✓</th></tr></thead>
+        <tbody id="vtbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- /ls-right -->
+</div><!-- /ls-wrap -->
+</div><!-- /container -->
+
+<!-- Fullscreen timer -->
+<div class="fs-timer-overlay" id="fsTimerOverlay">
+  <button class="fs-timer-close" onclick="closeFsTimer()">✕</button>
+  <div class="fs-timer-label">До следующего события</div>
+  <div class="fs-timer-time" id="fsTime">--:--:--</div>
+  <div class="fs-timer-event" id="fsEvent"></div>
+  <div class="fs-timer-progress"><div class="fs-timer-bar" id="fsBar" style="width:0%"></div></div>
+  <div class="fs-timer-next" id="fsNext"></div>
+  <div class="fs-timer-dots" id="fsDots"></div>
+</div>
+
+<div class="popup-overlay" id="popupOverlay" onclick="closePopup(event)">
+  <div class="popup">
+    <div class="popup-header"><div class="popup-title" id="popupTitle"></div><button class="popup-close" onclick="closePopupDirect()">✕</button></div>
+    <div id="popupBody"></div>
+  </div>
+</div>
+
+<div class="theme-popup-overlay" id="themePopupOverlay" onclick="closeThemePicker(event)">
+  <div class="theme-popup">
+    <div class="theme-popup-title">🎨 Выбор темы</div>
+    <div class="theme-grid" id="themeGrid"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const NIGHT_START=23,NIGHT_END=6,ROW_H=33,SEP_H=27,OVERSCAN=12;
+let GATHER_MAX=20,NEW_SKILL_COLLECT=20;
+const SKILL_COLORS=['#00d4ff','#f472b6','#10b981','#f59e0b','#a78bfa','#fb923c'];
+let SKILL=6,COOLDOWN=11;
+let allEvents=[],allRows=[],filteredRows=[],eventsByDay={};
+let vsLastStart=-1,vsLastEnd=-1,calYear,calMonth;
+let isDark=true,currentTheme='dark';
+let notifEnabled=false,scheduledNotifs=[];
+let countdownTimer=null,multiSkills=[],currentTab='schedule';
+let journal={};
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const today=new Date().toISOString().slice(0,10);
+  const dp=document.getElementById('startDate');
+  dp.value=today; dp.min=today;
+  dp.addEventListener('change',()=>{if(dp.value<today)dp.value=today;});
+  loadSettings(); renderPresets(); initSkillList(); startClock();
+  document.getElementById('vscrollWrap').onscroll=renderVisible;
+  setupPWA(); registerSW();
+});
+
+function startClock(){
+  const el=document.getElementById('nowClock');
+  const t=()=>el.textContent=new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  t(); setInterval(t,1000);
+}
+function showToast(msg,color){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.background=color||'var(--accent3)';
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+const THEMES=[
+  {id:'dark',label:'Cyber',emoji:'🌌',bg:'#0a0f1e',accent:'#00d4ff',card:'#131c35'},
+  {id:'midnight',label:'Midnight',emoji:'🔮',bg:'#0d0a1e',accent:'#a78bfa',card:'#1a1535'},
+  {id:'forest',label:'Forest',emoji:'🌿',bg:'#091510',accent:'#4ade80',card:'#132a1a'},
+  {id:'lava',label:'Lava',emoji:'🌋',bg:'#1a0a05',accent:'#fb923c',card:'#271008'},
+  {id:'arctic',label:'Arctic',emoji:'❄️',bg:'#f0f7ff',accent:'#2563eb',card:'#ffffff'},
+  {id:'sand',label:'Sand',emoji:'🏜️',bg:'#fdf6e3',accent:'#b45309',card:'#fffdf7'},
+];
+function openThemePicker(){
+  document.getElementById('themeGrid').innerHTML=THEMES.map(t=>`
+    <div class="theme-swatch${currentTheme===t.id?' selected':''}" onclick="applyTheme('${t.id}')" style="background:${t.bg}">
+      <div class="theme-swatch-preview" style="background:linear-gradient(135deg,${t.bg},${t.card})">${t.emoji}</div>
+      <div class="theme-swatch-label" style="background:${t.card};color:${t.accent}">${t.label}</div>
+    </div>`).join('');
+  document.getElementById('themePopupOverlay').classList.add('open');
+}
+function closeThemePicker(e){if(!e||e.target===document.getElementById('themePopupOverlay'))document.getElementById('themePopupOverlay').classList.remove('open');}
+function applyTheme(id){
+  currentTheme=id; document.documentElement.setAttribute('data-theme',id);
+  const t=THEMES.find(x=>x.id===id);
+  document.querySelector('meta[name="theme-color"]').content=t.bg;
+  isDark=!['arctic','sand'].includes(id);
+  if(allEvents.length){drawChart();buildHeatmap();}
+  closeThemePicker(null); saveSettings(true); showToast('✓ Тема "'+t.label+'"');
+}
+
+const TAB_IDS=['schedule','journal','stats','skills','presets'];
+function switchTab(name){
+  currentTab=name;
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',TAB_IDS[i]===name));
+  TAB_IDS.forEach(id=>{
+    const el=document.getElementById('tab'+id.charAt(0).toUpperCase()+id.slice(1));
+    if(el) el.style.display=id===name?'':'none';
+  });
+  if(name==='journal') renderJournal();
+  if(name==='stats') renderStats();
+}
+
+const pad2=n=>String(n).padStart(2,'0');
+const fmt=d=>d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});
+const fmtDate=d=>d.toLocaleDateString('ru-RU',{day:'2-digit',month:'short'});
+const fmtFull=d=>d.toLocaleDateString('ru-RU',{day:'numeric',month:'long',weekday:'long'});
+const isoDate=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+function getNightBounds(){
+  const sv=document.getElementById('nightStart').value||'23:00';
+  const ev=document.getElementById('nightEnd').value||'06:00';
+  const [sh,sm]=sv.split(':').map(Number);
+  const [eh,em]=ev.split(':').map(Number);
+  return {startH:sh,startM:sm,endH:eh,endM:em};
+}
+function isNight(h,m=0){
+  const {startH,startM,endH,endM}=getNightBounds();
+  const t=h*60+m, s=startH*60+startM, e=endH*60+endM;
+  if(s>e) return t>=s||t<e; // wraps midnight
+  return t>=s&&t<e;
+}
+function toggleNightCustom(){
+  const show=document.getElementById('skipNight').checked;
+  document.getElementById('nightCustom').classList.toggle('show',show);
+}
+
+function saveSettings(silent){
+  const s={startDate:document.getElementById('startDate').value,startTime:document.getElementById('startTime').value,days:document.getElementById('daysCount').value,skill:document.getElementById('skillHours').value,cd:document.getElementById('cdHours').value,gather:document.getElementById('gatherMins').value,newSkill:document.getElementById('newSkillMins').value,skipNight:document.getElementById('skipNight').checked,nightStart:document.getElementById('nightStart').value,nightEnd:document.getElementById('nightEnd').value,theme:currentTheme};
+  try{localStorage.setItem('skillTimerSettings',JSON.stringify(s));}catch(e){}
+  if(!silent) showToast('✓ Настройки сохранены');
+}
+function loadSettings(){
+  try{
+    const s=JSON.parse(localStorage.getItem('skillTimerSettings')||'null'); if(!s) return;
+    const today=new Date().toISOString().slice(0,10);
+    if(s.startDate&&s.startDate>=today) document.getElementById('startDate').value=s.startDate;
+    if(s.startTime) document.getElementById('startTime').value=s.startTime;
+    if(s.days) document.getElementById('daysCount').value=s.days;
+    if(s.skill) document.getElementById('skillHours').value=s.skill;
+    if(s.cd) document.getElementById('cdHours').value=s.cd;
+    if(s.gather) document.getElementById('gatherMins').value=s.gather;
+    if(s.newSkill) document.getElementById('newSkillMins').value=s.newSkill;
+    if(s.nightStart) document.getElementById('nightStart').value=s.nightStart;
+    if(s.nightEnd) document.getElementById('nightEnd').value=s.nightEnd;
+    if(s.skipNight){document.getElementById('skipNight').checked=true;toggleNightCustom();}
+    if(s.theme&&THEMES.find(t=>t.id===s.theme)) applyTheme(s.theme);
+  }catch(e){}
+  try{journal=JSON.parse(localStorage.getItem('skillTimerJournal')||'{}');}catch(e){journal={};}
+  loadPresets();
+}
+function saveJournal(){try{localStorage.setItem('skillTimerJournal',JSON.stringify(journal));}catch(e){}}
+
+function getPresets(){try{return JSON.parse(localStorage.getItem('skillTimerPresets')||'[]');}catch(e){return[];}}
+function savePresetsData(a){try{localStorage.setItem('skillTimerPresets',JSON.stringify(a));}catch(e){}}
+function savePreset(){
+  const name=document.getElementById('presetName').value.trim();
+  if(!name){showToast('⚠ Введите название','var(--warn)');return;}
+  const p=getPresets();
+  p.push({name,startTime:document.getElementById('startTime').value,days:document.getElementById('daysCount').value,skill:document.getElementById('skillHours').value,cd:document.getElementById('cdHours').value,skipNight:document.getElementById('skipNight').checked});
+  savePresetsData(p); document.getElementById('presetName').value='';
+  renderPresets(); showToast('✓ Пресет сохранён');
+}
+function loadPresets(){renderPresets();}
+function applyPreset(i){
+  const p=getPresets()[i]; if(!p) return;
+  document.getElementById('startTime').value=p.startTime||'05:30';
+  document.getElementById('daysCount').value=p.days||30;
+  document.getElementById('skillHours').value=p.skill||6;
+  document.getElementById('cdHours').value=p.cd||11;
+  document.getElementById('skipNight').checked=!!p.skipNight;
+  showToast('✓ Пресет "'+p.name+'" загружен'); switchTab('schedule');
+}
+function deletePreset(i){const p=getPresets();p.splice(i,1);savePresetsData(p);renderPresets();showToast('🗑 Пресет удалён','var(--warn)');}
+function renderPresets(){
+  const c=document.getElementById('presetsList'); if(!c) return;
+  const p=getPresets();
+  if(!p.length){c.innerHTML='<span style="font-size:12px;color:var(--muted)">Пресетов пока нет</span>';return;}
+  c.innerHTML=p.map((x,i)=>`<div style="display:flex;align-items:center;gap:5px"><div class="preset-chip" onclick="applyPreset(${i})">${x.name}<span style="opacity:.5;font-size:10px;margin-left:4px">${x.skill}h/${x.cd}h</span></div><button class="icon-btn" onclick="deletePreset(${i})" style="width:26px;height:26px;font-size:12px">✕</button></div>`).join('');
+}
+
+function initSkillList(){
+  try{multiSkills=JSON.parse(localStorage.getItem('skillTimerMulti')||'null')||[{name:'Навык 1',skill:6,cd:11,color:'#00d4ff'}];}
+  catch(e){multiSkills=[{name:'Навык 1',skill:6,cd:11,color:'#00d4ff'}];}
+  renderSkillList();
+}
+function renderSkillList(){
+  document.getElementById('skillList').innerHTML=multiSkills.map((s,i)=>`<div class="skill-row"><div><label class="field-label">Название</label><input type="text" value="${s.name}" oninput="updateSkill(${i},'name',this.value)" style="font-size:14px"></div><div><label class="field-label">Навык ч</label><input type="number" value="${s.skill}" min="0.5" max="72" step="0.5" inputmode="decimal" oninput="updateSkill(${i},'skill',+this.value)"></div><div><label class="field-label">КД ч</label><input type="number" value="${s.cd}" min="0.5" max="72" step="0.5" inputmode="decimal" oninput="updateSkill(${i},'cd',+this.value)"></div><div style="display:flex;align-items:flex-end;padding-bottom:2px"><button class="icon-btn" onclick="removeSkill(${i})" style="width:32px;height:36px;color:#f87171;border-color:#f87171">✕</button></div></div>`).join('');
+}
+function updateSkill(i,k,v){multiSkills[i][k]=v;try{localStorage.setItem('skillTimerMulti',JSON.stringify(multiSkills));}catch(e){}}
+function addSkillRow(){multiSkills.push({name:'Навык '+(multiSkills.length+1),skill:6,cd:11,color:SKILL_COLORS[multiSkills.length%SKILL_COLORS.length]});renderSkillList();}
+function removeSkill(i){if(multiSkills.length<=1){showToast('⚠ Минимум 1 навык','var(--warn)');return;}multiSkills.splice(i,1);renderSkillList();}
+
+function getStartDateTime(){
+  const dv=document.getElementById('startDate').value,tv=document.getElementById('startTime').value||'00:00';
+  const [hh,mm]=tv.split(':');
+  if(dv){const[y,mo,d]=dv.split('-');return new Date(+y,+mo-1,+d,+hh,+mm,0,0);}
+  const s=new Date(); s.setHours(+hh,+mm,0,0); return s;
+}
+function generate(){
+  const skipNight=document.getElementById('skipNight').checked;
+  const days=Math.max(1,Math.min(365,+document.getElementById('daysCount').value||30));
+  SKILL=parseFloat(document.getElementById('skillHours').value)||6;
+  COOLDOWN=parseFloat(document.getElementById('cdHours').value)||11;
+  GATHER_MAX=Math.max(1,+document.getElementById('gatherMins').value||20);
+  NEW_SKILL_COLLECT=Math.max(1,+document.getElementById('newSkillMins').value||20);
+  document.getElementById('statSkill').textContent=SKILL+'h';
+  document.getElementById('statCD').textContent=COOLDOWN+'h';
+  _buildEvents([{skill:SKILL,cd:COOLDOWN}],getStartDateTime(),days,skipNight);
+}
+function generateMulti(){
+  const skipNight=document.getElementById('skipNight').checked;
+  const days=Math.max(1,Math.min(365,+document.getElementById('daysCount').value||30));
+  GATHER_MAX=Math.max(1,+document.getElementById('gatherMins').value||20);
+  NEW_SKILL_COLLECT=Math.max(1,+document.getElementById('newSkillMins').value||20);
+  _buildEvents(multiSkills.map(s=>({skill:s.skill,cd:s.cd,name:s.name,color:s.color})),getStartDateTime(),days,skipNight);
+  showToast('✓ '+multiSkills.length+' навыков | '+allEvents.length+' запусков');
+}
+
+function _buildEvents(defs,start,days,skipNight){
+  allEvents=[]; allRows=[]; eventsByDay={};
+  const endLimit=new Date(start.getTime()+days*86400000);
+  let gIdx=1,lastDay='';
+  defs.forEach((def,si)=>{
+    let cur=new Date(start);
+    const sH=def.skill||6,cH=def.cd||11;
+    while(cur<endLimit){
+      if(skipNight&&isNight(cur.getHours(),cur.getMinutes())){cur=new Date(cur.getTime()+30*60000);continue;}
+      const launch=new Date(cur);
+      const skillEnd=new Date(launch.getTime()+sH*3600000);
+      const cdEnd=new Date(skillEnd.getTime()+cH*3600000);
+      const gatherEnd=new Date(cdEnd.getTime()+GATHER_MAX*60000);
+      const newSkillEnd=new Date(gatherEnd.getTime()+NEW_SKILL_COLLECT*60000);
+      const dk=isoDate(launch);
+      if(!eventsByDay[dk]) eventsByDay[dk]=[];
+      eventsByDay[dk].push({idx:gIdx,launch,skillEnd,cdEnd,gatherEnd,newSkillEnd,skillName:def.name||'',color:def.color||'#00d4ff'});
+      allEvents.push(launch);
+      if(si===0){
+        const dk2=launch.toDateString();
+        if(dk2!==lastDay){lastDay=dk2;allRows.push({dayLabel:fmtDate(launch)+' \u00b7 '+launch.toLocaleDateString('ru-RU',{weekday:'short'})});}
+        allRows.push({idx:gIdx,launch,skillEnd,cdEnd,gatherEnd,newSkillEnd,color:def.color||'#00d4ff'});
+      }
+      cur=new Date(newSkillEnd); gIdx++;
+    }
+  });
+  if(defs.length>1){
+    const flat=Object.keys(eventsByDay).sort().reduce((a,dk)=>a.concat(eventsByDay[dk]),[]);
+    flat.sort((a,b)=>a.launch-b.launch).forEach((ev,i)=>ev.idx=i+1);
+    allRows=[]; lastDay='';
+    flat.forEach(ev=>{const dk=ev.launch.toDateString();if(dk!==lastDay){lastDay=dk;allRows.push({dayLabel:fmtDate(ev.launch)+' \u00b7 '+ev.launch.toLocaleDateString('ru-RU',{weekday:'short'})});}allRows.push(ev);});
+    allEvents.sort((a,b)=>a-b);
+  }
+  filteredRows=allRows;
+  document.getElementById('statSkill').textContent=(defs[0].skill)+'h';
+  document.getElementById('statCD').textContent=(defs[0].cd)+'h';
+  document.getElementById('statTotal').textContent=allEvents.length;
+  document.getElementById('countBadge').textContent=allEvents.length;
+  ['timelineCard','calCard','heatmapCard','tableCard'].forEach(id=>document.getElementById(id).style.display='block');
+  document.getElementById('countdownWidget').style.display='block';
+  document.getElementById('searchBox').value='';
+  vsLastStart=-1; vsLastEnd=-1; document.getElementById('vscrollWrap').scrollTop=0;
+  renderVisible(); drawChart(); buildHeatmap();
+  calYear=allEvents[0].getFullYear(); calMonth=allEvents[0].getMonth();
+  renderCalendar(); startCountdown(); scheduleNotifications(); updateDoneCount();
+  if(defs.length===1) showToast('✓ '+allEvents.length+' запусков на '+days+' дней');
+}
+
+// JOURNAL
+function markDone(idx){
+  journal[idx]=journal[idx]==='done'?undefined:'done';
+  if(journal[idx]===undefined) delete journal[idx];
+  saveJournal(); updateDoneCount(); if(currentTab==='journal') renderJournal();
+  vsLastStart=-1; renderVisible(); if(currentTab==='stats') renderStats();
+}
+function markSkipped(idx){
+  journal[idx]='skipped'; saveJournal(); updateDoneCount();
+  if(currentTab==='journal') renderJournal(); vsLastStart=-1; renderVisible();
+}
+function updateDoneCount(){
+  const n=Object.values(journal).filter(v=>v==='done').length;
+  document.getElementById('statDone').textContent=n||'\u2014';
+}
+function clearJournal(){journal={};saveJournal();updateDoneCount();renderJournal();vsLastStart=-1;renderVisible();renderStats();showToast('🗑 Журнал очищен','var(--warn)');}
+function skipNext(){
+  if(!allEvents.length){showToast('⚠ Нет расписания','var(--warn)');return;}
+  const now=Date.now();
+  const flat=Object.values(eventsByDay).flat().sort((a,b)=>a.launch-b.launch);
+  const next=flat.find(ev=>ev.launch.getTime()>now&&journal[ev.idx]!=='done'&&journal[ev.idx]!=='skipped');
+  if(!next){showToast('Нет ближайшего запуска','var(--warn)');return;}
+  journal[next.idx]='skipped'; saveJournal(); updateDoneCount();
+  if(currentTab==='journal') renderJournal(); vsLastStart=-1; renderVisible();
+  const after=flat.find(ev=>ev.idx>next.idx&&journal[ev.idx]!=='done'&&journal[ev.idx]!=='skipped');
+  if(after){
+    const b=document.getElementById('catchupBanner');
+    b.style.display='block';
+    b.textContent='⏭ Пропущен #'+next.idx+'. Следующий: '+fmt(after.launch)+' ('+fmtDate(after.launch)+')';
+    setTimeout(()=>b.style.display='none',6000);
+  }
+  showToast('⏭ Запуск #'+next.idx+' пропущен','var(--warn)');
+}
+function renderJournal(){
+  const list=document.getElementById('journalList'),actions=document.getElementById('journalActions'),empty=document.getElementById('journalEmpty');
+  if(!allEvents.length){list.innerHTML='';actions.style.display='none';empty.style.display='block';return;}
+  empty.style.display='none'; actions.style.display='grid';
+  const now=Date.now();
+  const flat=Object.values(eventsByDay).flat().sort((a,b)=>a.launch-b.launch).slice(0,60);
+  list.innerHTML=flat.map(ev=>{
+    const st=journal[ev.idx],isPast=ev.launch.getTime()<now;
+    const isDone=st==='done',isSkip=st==='skipped';
+    const emoji=isDone?'✅':isSkip?'⏭':isPast?'⬜':'🔵';
+    const dimStyle=isDone||isSkip?'opacity:.6':'';
+    const launchColor=isDone?'var(--accent3)':isSkip?'var(--warn)':'var(--accent)';
+    return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);${dimStyle}">
+      <span style="font-size:16px;flex-shrink:0">${emoji}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:${launchColor}">#${ev.idx} · ${fmt(ev.launch)} ${fmtDate(ev.launch)}</div>
+        <div style="font-size:10px;color:var(--muted)">КД■ ${fmt(ev.cdEnd)} · Сбор■ ${fmt(ev.gatherEnd)}</div>
+      </div>
+      <div style="display:flex;gap:5px;flex-shrink:0">
+        <button class="icon-btn" onclick="markDone(${ev.idx})" title="Выполнено" style="${isDone?'border-color:var(--accent3);color:var(--accent3)':''}">✓</button>
+        ${!isDone?`<button class="icon-btn" onclick="markSkipped(${ev.idx})" title="Пропустить" style="${isSkip?'border-color:var(--warn);color:var(--warn)':''}">⏭</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// STATS
+function renderStats(){
+  const empty=document.getElementById('statsEmpty'),content=document.getElementById('statsContent');
+  const doneKeys=Object.keys(journal).filter(k=>journal[k]==='done').map(Number);
+  if(!allEvents.length||!doneKeys.length){empty.style.display='block';content.style.display='none';return;}
+  empty.style.display='none'; content.style.display='block';
+  const total=doneKeys.length, rate=Math.round(total/allEvents.length*100);
+  const flat=Object.values(eventsByDay).flat();
+  const byDay={};
+  doneKeys.forEach(idx=>{const ev=flat.find(e=>e.idx===idx);if(!ev) return;const dk=isoDate(ev.launch);byDay[dk]=(byDay[dk]||0)+1;});
+  const days=Object.keys(byDay).sort();
+  let streak=0,cur=0;
+  days.forEach((d,i)=>{if(i===0){cur=1;}else{const diff=(new Date(d)-new Date(days[i-1]))/86400000;cur=diff<=1?cur+1:1;}streak=Math.max(streak,cur);});
+  document.getElementById('recStreak').textContent=streak;
+  document.getElementById('recTotal').textContent=total;
+  document.getElementById('recBestDay').textContent=Math.max(...Object.values(byDay));
+  document.getElementById('recRate').textContent=rate+'%';
+  const last14=days.slice(-14), maxV=Math.max(...last14.map(d=>byDay[d]||0),1);
+  document.getElementById('statsBarChart').innerHTML=last14.map(dk=>{
+    const v=byDay[dk]||0,pct=Math.round(v/maxV*100);
+    const lbl=new Date(dk+'T12:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
+    return `<div class="chart-bar-row"><div class="chart-bar-label">${lbl}</div><div class="chart-bar-bg"><div class="chart-bar-fill" style="width:${pct}%"></div><span class="chart-bar-val">${v}</span></div></div>`;
+  }).join('');
+}
+
+// VIRTUAL SCROLL
+function renderVisible(){
+  const wrap=document.getElementById('vscrollWrap'),tbody=document.getElementById('vtbody'),rows=filteredRows;
+  const scrollY=wrap.scrollTop,viewH=wrap.clientHeight;
+  let cumH=0,startIdx=0;
+  for(let i=0;i<rows.length;i++){const h=rows[i].dayLabel?SEP_H:ROW_H;if(cumH+h>Math.max(0,scrollY-OVERSCAN*ROW_H)){startIdx=i;break;}cumH+=h;if(i===rows.length-1)startIdx=rows.length;}
+  let padTop=cumH,endIdx=startIdx,visH=0;
+  while(endIdx<rows.length&&visH<viewH+OVERSCAN*2*ROW_H){visH+=(rows[endIdx].dayLabel?SEP_H:ROW_H);endIdx++;}
+  if(startIdx===vsLastStart&&endIdx===vsLastEnd) return;
+  vsLastStart=startIdx; vsLastEnd=endIdx;
+  let padBot=0; for(let i=endIdx;i<rows.length;i++) padBot+=(rows[i].dayLabel?SEP_H:ROW_H);
+  let html=`<tr style="height:${padTop}px"><td colspan="7" style="padding:0;border:none"></td></tr>`;
+  for(let i=startIdx;i<endIdx;i++){
+    const r=rows[i];
+    if(r.dayLabel){html+=`<tr class="day-sep"><td colspan="7">📅 ${r.dayLabel}</td></tr>`;continue;}
+    const st=journal[r.idx];
+    const dot=r.color?`<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${r.color};margin-right:4px;vertical-align:middle"></span>`:'';
+    const cls=st==='done'?'row-done':st==='skipped'?'row-skipped':'';
+    const statusHtml=st==='done'?'✅':st==='skipped'?'⏭':'·';
+    html+=`<tr class="${cls}"><td class="num-cell">${r.idx}</td><td class="launch-cell">${dot}${fmt(r.launch)}</td><td class="skill-cell">${fmt(r.skillEnd)}</td><td class="cd-cell">${fmt(r.cdEnd)}</td><td class="gather-cell">${fmt(r.gatherEnd)}</td><td class="newskill-cell">${fmt(r.newSkillEnd)}</td><td class="status-cell" onclick="markDone(${r.idx})" title="Отметить">${statusHtml}</td></tr>`;
+  }
+  html+=`<tr style="height:${padBot}px"><td colspan="7" style="padding:0;border:none"></td></tr>`;
+  tbody.innerHTML=html;
+}
+function onSearch(){
+  const q=document.getElementById('searchBox').value.toLowerCase().trim();
+  if(!q){filteredRows=allRows;}else{filteredRows=[];let pd=null;for(const r of allRows){if(r.dayLabel){pd=r;continue;}if((r.idx+' '+fmt(r.launch)+' '+fmt(r.cdEnd)).includes(q)){if(pd){filteredRows.push(pd);pd=null;}filteredRows.push(r);}}}
+  vsLastStart=-1; vsLastEnd=-1; document.getElementById('vscrollWrap').scrollTop=0; renderVisible();
+}
+
+// CHART
+function drawChart(){
+  const canvas=document.getElementById('chart'),dpr=window.devicePixelRatio||1,W=canvas.offsetWidth,H=60;
+  canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.width=W+'px'; canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
+  if(!allEvents.length) return;
+  const tMin=allEvents[0].getTime(),tMax=allEvents[allEvents.length-1].getTime()+(SKILL+COOLDOWN+(GATHER_MAX+NEW_SKILL_COLLECT)/60)*3600000,range=tMax-tMin||1;
+  const toX=t=>((t-tMin)/range)*W;
+  const step=allEvents.length>400?Math.ceil(allEvents.length/400):1;
+  for(let i=0;i<allEvents.length;i+=step){
+    const t0=allEvents[i].getTime();
+    const x0=toX(t0),x1=toX(t0+SKILL*3600000),x2=toX(t0+(SKILL+COOLDOWN)*3600000),x3=toX(t0+(SKILL+COOLDOWN+GATHER_MAX/60)*3600000),x4=toX(t0+(SKILL+COOLDOWN+(GATHER_MAX+NEW_SKILL_COLLECT)/60)*3600000);
+    ctx.fillStyle='rgba(167,139,250,0.5)'; ctx.fillRect(x0,15,Math.max(x1-x0,1),18);
+    ctx.fillStyle='rgba(245,158,11,0.4)'; ctx.fillRect(x1,15,Math.max(x2-x1,1),18);
+    ctx.fillStyle='rgba(16,185,129,0.5)'; ctx.fillRect(x2,15,Math.max(x3-x2,1),18);
+    ctx.fillStyle='rgba(244,114,182,0.5)'; ctx.fillRect(x3,15,Math.max(x4-x3,1),18);
+    ctx.beginPath(); ctx.arc(x0,24,2.5,0,Math.PI*2);
+    ctx.fillStyle='#00d4ff'; ctx.shadowColor='#00d4ff'; ctx.shadowBlur=5; ctx.fill(); ctx.shadowBlur=0;
+  }
+  const now=Date.now();
+  if(now>=tMin&&now<=tMax){
+    const nx=toX(now);
+    ctx.beginPath(); ctx.moveTo(nx,0); ctx.lineTo(nx,H);
+    ctx.strokeStyle='rgba(255,255,255,0.7)'; ctx.lineWidth=1.5; ctx.setLineDash([3,3]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,255,255,.9)'; ctx.font='9px monospace'; ctx.fillText('\u25bc',nx-4,10);
+  }
+}
+window.addEventListener('resize',()=>{if(allEvents.length){drawChart();vsLastStart=-1;renderVisible();}});
+setInterval(()=>{if(allEvents.length)drawChart();},30000);
+
+// HEATMAP
+function buildHeatmap(){
+  if(!allEvents.length) return;
+  const grid=document.getElementById('heatmapGrid'); grid.innerHTML='';
+  const days={},max=Math.max(...Object.values(eventsByDay).map(v=>v.length));
+  allEvents.forEach(e=>{const k=isoDate(e);days[k]=(days[k]||0)+1;});
+  const fd=new Date(allEvents[0]); fd.setHours(0,0,0,0);
+  const ld=new Date(allEvents[allEvents.length-1]); ld.setHours(0,0,0,0);
+  const cur=new Date(fd); cur.setDate(cur.getDate()-(cur.getDay()+6)%7);
+  for(let col=0;col<53;col++){
+    const col2=document.createElement('div'); col2.className='heatmap-col';
+    for(let row=0;row<7;row++){
+      const cell=document.createElement('div'); cell.className='heatmap-cell';
+      const d=new Date(cur);
+      if(d>=fd&&d<=ld){const k=isoDate(d),n=days[k]||0;if(n>0){cell.classList.add('l'+Math.ceil(n/max*4));cell.title=d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+': '+n;}}
+      else cell.style.opacity='0';
+      col2.appendChild(cell); cur.setDate(cur.getDate()+1);
+    }
+    grid.appendChild(col2);
+  }
+}
+
+// CALENDAR
+function renderCalendar(){
+  const now=new Date(),t=new Date(calYear,calMonth,1).toLocaleDateString('ru-RU',{month:'long',year:'numeric'});
+  document.getElementById('calTitle').textContent=t.charAt(0).toUpperCase()+t.slice(1);
+  const grid=document.getElementById('calGrid'); grid.innerHTML='';
+  ['\u041f\u043d','\u0412\u0442','\u0421\u0440','\u0427\u0442','\u041f\u0442','\u0421\u0431','\u0412\u0441'].forEach(d=>{const el=document.createElement('div');el.className='cal-dow';el.textContent=d;grid.appendChild(el);});
+  const off=(new Date(calYear,calMonth,1).getDay()+6)%7;
+  for(let i=0;i<off;i++){const el=document.createElement('div');el.className='cal-day empty';grid.appendChild(el);}
+  const dim=new Date(calYear,calMonth+1,0).getDate();
+  for(let d=1;d<=dim;d++){
+    const dk=`${calYear}-${pad2(calMonth+1)}-${pad2(d)}`;
+    const evs=eventsByDay[dk]||[];
+    const isToday=now.getFullYear()===calYear&&now.getMonth()===calMonth&&now.getDate()===d;
+    const el=document.createElement('div');
+    el.className='cal-day'+(isToday?' today':'')+(evs.length?' has-events':' no-events');
+    el.innerHTML=`<span>${d}</span>`;
+    if(evs.length){const dots=document.createElement('div');dots.className='cal-dot-row';for(let k=0;k<Math.min(evs.length,5);k++){const dot=document.createElement('div');dot.className='cal-dot';dots.appendChild(dot);}el.appendChild(dots);el.addEventListener('click',()=>openPopup(dk,evs));}
+    grid.appendChild(el);
+  }
+}
+function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
+
+// POPUP
+function openPopup(dk,evs){
+  document.getElementById('popupTitle').textContent=fmtFull(new Date(dk+'T12:00:00'));
+  document.getElementById('popupBody').innerHTML=evs.map(ev=>`
+    <div class="popup-event" style="border-left-color:${ev.color||'var(--accent)'}">
+      <div class="popup-event-num">${ev.skillName?ev.skillName+' \u00b7 ':''}Запуск #${ev.idx} ${journal[ev.idx]==='done'?'✅':journal[ev.idx]==='skipped'?'⏭':''}</div>
+      <div class="popup-phases">
+        <div class="popup-phase"><span class="popup-phase-lbl">⚡ Запуск</span><span class="popup-phase-val" style="color:${ev.color||'var(--accent)'}">${fmt(ev.launch)}</span></div>
+        <div class="popup-phase"><span class="popup-phase-lbl">🔮 Навык■</span><span class="popup-phase-val" style="color:#a78bfa">${fmt(ev.skillEnd)}</span></div>
+        <div class="popup-phase"><span class="popup-phase-lbl">⏳ КД■</span><span class="popup-phase-val" style="color:var(--warn)">${fmt(ev.cdEnd)}</span></div>
+        <div class="popup-phase"><span class="popup-phase-lbl">📦 Сбор■</span><span class="popup-phase-val" style="color:var(--accent3)">${fmt(ev.gatherEnd)}</span></div>
+        <div class="popup-phase"><span class="popup-phase-lbl">✨ Новый</span><span class="popup-phase-val" style="color:var(--pink)">${fmt(ev.newSkillEnd)}</span></div>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:6px">
+        <button class="btn btn-ghost" onclick="markDone(${ev.idx});closePopupDirect()" style="flex:1;padding:7px;font-size:11px">✓ Выполнено</button>
+        <button class="btn btn-warn" onclick="markSkipped(${ev.idx});closePopupDirect()" style="flex:1;padding:7px;font-size:11px">⏭ Пропустить</button>
+      </div>
+    </div>`).join('');
+  document.getElementById('popupOverlay').classList.add('open');
+}
+function closePopup(e){if(e.target===document.getElementById('popupOverlay'))closePopupDirect();}
+function closePopupDirect(){document.getElementById('popupOverlay').classList.remove('open');}
+
+// COUNTDOWN
+function findNextEvent(){
+  const now=Date.now(),phases=[];
+  Object.values(eventsByDay).flat().forEach(ev=>{
+    if(ev.launch.getTime()>now&&journal[ev.idx]!=='done'&&journal[ev.idx]!=='skipped') phases.push({t:ev.launch.getTime(),label:'⚡ Запуск навыка'});
+    if(ev.cdEnd.getTime()>now) phases.push({t:ev.cdEnd.getTime(),label:'📦 Конец КД \u2014 собери!'});
+    if(ev.newSkillEnd.getTime()>now) phases.push({t:ev.newSkillEnd.getTime(),label:'✨ Новый навык готов'});
+  });
+  if(!phases.length) return null;
+  phases.sort((a,b)=>a.t-b.t); return phases[0];
+}
+let countdownPaused=false, pausedAt=0, pauseOffset=0;
+
+function startCountdown(){
+  if(countdownTimer) clearInterval(countdownTimer);
+  countdownPaused=false; pauseOffset=0;
+  document.getElementById('cdPauseBtn').textContent='⏸';
+  document.getElementById('cdPauseBtn').classList.remove('active');
+  // Use visibilitychange to detect tab wake-up and resync
+  document.removeEventListener('visibilitychange',_onVisible);
+  document.addEventListener('visibilitychange',_onVisible);
+  countdownTimer=setInterval(tickCountdown,500);
+  tickCountdown();
+}
+function _onVisible(){
+  if(document.visibilityState==='visible'){
+    // Tab was resumed — force immediate tick to resync
+    tickCountdown();
+  }
+}
+function toggleCountdownPause(){
+  if(!allEvents.length) return;
+  countdownPaused=!countdownPaused;
+  const btn=document.getElementById('cdPauseBtn');
+  if(countdownPaused){
+    pausedAt=Date.now();
+    btn.textContent='▶';
+    btn.classList.add('active');
+    document.getElementById('countdownLabel').textContent='⏸ Таймер на паузе';
+  } else {
+    pauseOffset+=Date.now()-pausedAt;
+    btn.textContent='⏸';
+    btn.classList.remove('active');
+    document.getElementById('countdownLabel').textContent='До следующего события';
+    tickCountdown();
+  }
+}
+function resetCountdown(){
+  if(!confirm('Сбросить расписание и журнал?')) return;
+  if(countdownTimer) clearInterval(countdownTimer);
+  countdownTimer=null; countdownPaused=false; pauseOffset=0;
+  allEvents=[]; allRows=[]; filteredRows=[]; eventsByDay={};
+  journal={}; saveJournal(); updateDoneCount();
+  ['timelineCard','calCard','heatmapCard','tableCard'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('countdownWidget').style.display='none';
+  document.getElementById('vtbody').innerHTML='';
+  document.getElementById('statTotal').textContent='—';
+  document.getElementById('statDone').textContent='—';
+  showToast('↺ Сброшено','var(--warn)');
+}
+function tickCountdown(){
+  if(countdownPaused) return;
+  const next=findNextEvent();
+  if(!next){document.getElementById('countdownTime').textContent='\u2014';document.getElementById('countdownEvent').textContent='Все события завершены';return;}
+  // Real-time diff — works correctly after tab resume because Date.now() is always current
+  const diff=next.t-Date.now()-pauseOffset;
+  if(diff<=0){
+    // Event just passed, advance to next
+    pauseOffset=0;
+    const n2=findNextEvent();
+    if(!n2){document.getElementById('countdownTime').textContent='\u2014';return;}
+    tickCountdown(); return;
+  }
+  const h=Math.floor(diff/3600000),m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);
+  document.getElementById('countdownTime').textContent=pad2(h)+':'+pad2(m)+':'+pad2(s);
+  document.getElementById('countdownEvent').textContent=next.label;
+  document.getElementById('countdownBar').style.width=Math.max(0,Math.min(100,100-diff/(3600000*(SKILL+COOLDOWN+(GATHER_MAX+NEW_SKILL_COLLECT)/60))*100))+'%';
+}
+
+// NOTIFICATIONS
+function toggleNotifications(){
+  if(!('Notification'in window)){showToast('⚠ Не поддерживается','var(--warn)');return;}
+  if(Notification.permission==='denied'){showBanner('🔕 Уведомления заблокированы',true);return;}
+  if(!notifEnabled){Notification.requestPermission().then(p=>{if(p==='granted'){notifEnabled=true;document.getElementById('notifBtn').textContent='🔔';showBanner('🔔 Уведомления включены');scheduleNotifications();}else showBanner('🔕 Отклонено',true);});}
+  else{notifEnabled=false;document.getElementById('notifBtn').textContent='🔕';showBanner('🔕 Отключены',true);}
+}
+function showBanner(msg,denied){const b=document.getElementById('notifBanner');b.innerHTML=msg;b.className='notif-banner'+(denied?' denied':'');b.style.display='flex';setTimeout(()=>b.style.display='none',5000);}
+function scheduleNotifications(){
+  if(!notifEnabled||Notification.permission!=='granted') return;
+  scheduledNotifs.forEach(t=>clearTimeout(t)); scheduledNotifs=[];
+  const now=Date.now(),ADV=5*60000;
+  Object.values(eventsByDay).flat().slice(0,100).forEach(ev=>{const gt=ev.cdEnd.getTime()-ADV;if(gt>now) scheduledNotifs.push(setTimeout(()=>{if(notifEnabled) new Notification('⚡ Skill Timer',{body:'Через 5 мин \u2014 '+fmt(ev.cdEnd)+' конец КД!'});},gt-now));});
+}
+
+// EXPORT PNG
+function exportPNG(){
+  if(!allEvents.length){showToast('⚠ Нет расписания','var(--warn)');return;}
+  const rows=filteredRows.filter(r=>!r.dayLabel).slice(0,30);
+  const W=700,rH=34,hH=50,pH=20,H=hH+rows.length*rH+pH;
+  const cvs=document.createElement('canvas'); cvs.width=W*2; cvs.height=H*2;
+  const ctx=cvs.getContext('2d'); ctx.scale(2,2);
+  const th=THEMES.find(t=>t.id===currentTheme)||THEMES[0];
+  ctx.fillStyle=th.bg; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=th.accent; ctx.font='bold 18px sans-serif'; ctx.fillText('SKILL TIMER - Расписание',16,32);
+  ctx.fillStyle=isDark?'#64748b':'#94a3b8'; ctx.font='11px monospace'; ctx.fillText(new Date().toLocaleString('ru-RU'),W-180,32);
+  ctx.strokeStyle=isDark?'#1e2d50':'#cbd5e1'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(0,hH); ctx.lineTo(W,hH); ctx.stroke();
+  const cols=['#','Запуск','Навык','КД','Сбор','Новый',''],cw=[35,105,105,105,115,115,40];
+  let cx=8; cols.forEach((c,i)=>{ctx.fillStyle=isDark?'#64748b':'#94a3b8';ctx.font='bold 10px sans-serif';ctx.fillText(c,cx,hH-8);cx+=cw[i];});
+  const colors=[null,th.accent,'#a78bfa',isDark?'#f59e0b':'#d97706',isDark?'#10b981':'#059669',isDark?'#f472b6':'#db2777',null];
+  rows.forEach((r,ri)=>{
+    const y=hH+ri*rH;
+    if(ri%2===0){ctx.fillStyle=isDark?'rgba(255,255,255,0.02)':'rgba(0,0,0,0.02)';ctx.fillRect(0,y,W,rH);}
+    ctx.strokeStyle=isDark?'#1e2d50':'#e2e8f0'; ctx.lineWidth=0.5; ctx.beginPath(); ctx.moveTo(0,y+rH); ctx.lineTo(W,y+rH); ctx.stroke();
+    const st=journal[r.idx];
+    const vals=[r.idx,fmt(r.launch),fmt(r.skillEnd),fmt(r.cdEnd),fmt(r.gatherEnd),fmt(r.newSkillEnd),st==='done'?'OK':st==='skipped'?'SKIP':''];
+    cx=8; vals.forEach((v,i)=>{ctx.fillStyle=colors[i]||(isDark?'#e2e8f0':'#0f172a');ctx.font=(i===0?'10':'12')+'px monospace';ctx.fillText(v,cx,y+rH/2+5);cx+=cw[i];});
+  });
+  cvs.toBlob(blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='skill-schedule.png';a.click();showToast('✓ PNG сохранён');});
+}
+
+// ICS
+function toISOLocal(d){return`${d.getFullYear()}${pad2(d.getMonth()+1)}${pad2(d.getDate())}T${pad2(d.getHours())}${pad2(d.getMinutes())}00`;}
+function downloadICS(){
+  if(!allEvents.length){showToast('⚠ Нет расписания','var(--warn)');return;}
+  const evs=Object.values(eventsByDay).flat().sort((a,b)=>a.launch-b.launch);
+  let txt='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//SkillTimer//RU\r\n';
+  evs.forEach((ev,i)=>{txt+=`BEGIN:VEVENT\r\nSUMMARY:${ev.skillName?ev.skillName+' ':''}#${i+1}\r\nDTSTART:${toISOLocal(ev.launch)}\r\nDTEND:${toISOLocal(ev.skillEnd)}\r\nDESCRIPTION:${fmt(ev.cdEnd)} end CD\r\nEND:VEVENT\r\n`;});
+  txt+='END:VCALENDAR';
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([txt],{type:'text/calendar;charset=utf-8'})); a.download='skill_schedule.ics'; a.click(); showToast('✓ ICS скачан');
+}
+
+// FULLSCREEN TIMER
+let fsTimer=null;
+function openFsTimer(){
+  document.getElementById('fsTimerOverlay').classList.add('open');
+  if(fsTimer) clearInterval(fsTimer);
+  fsTimer=setInterval(tickFsTimer,500);
+  tickFsTimer();
+  // Try to request wake lock so screen stays on
+  if('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(()=>{});
+}
+function closeFsTimer(){
+  document.getElementById('fsTimerOverlay').classList.remove('open');
+  if(fsTimer){clearInterval(fsTimer);fsTimer=null;}
+}
+function tickFsTimer(){
+  const next=findNextEvent();
+  if(!next){
+    document.getElementById('fsTime').textContent='—';
+    document.getElementById('fsEvent').textContent='Нет событий';
+    document.getElementById('fsNext').textContent='';
+    document.getElementById('fsDots').innerHTML='';
+    return;
+  }
+  const diff=next.t-Date.now();
+  if(diff<=0){tickFsTimer();return;}
+  const h=Math.floor(diff/3600000),m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);
+  document.getElementById('fsTime').textContent=pad2(h)+':'+pad2(m)+':'+pad2(s);
+  document.getElementById('fsEvent').textContent=next.label;
+  const total=3600000*(SKILL+COOLDOWN+(GATHER_MAX+NEW_SKILL_COLLECT)/60);
+  document.getElementById('fsBar').style.width=Math.max(0,Math.min(100,100-diff/total*100))+'%';
+  // show next 3 upcoming events as dots + times
+  const now=Date.now(), phases=[];
+  Object.values(eventsByDay).flat().forEach(ev=>{
+    if(ev.launch.getTime()>now&&journal[ev.idx]!=='done'&&journal[ev.idx]!=='skipped') phases.push({t:ev.launch.getTime(),label:'⚡ '+fmt(ev.launch)});
+    if(ev.cdEnd.getTime()>now) phases.push({t:ev.cdEnd.getTime(),label:'📦 '+fmt(ev.cdEnd)});
+    if(ev.newSkillEnd.getTime()>now) phases.push({t:ev.newSkillEnd.getTime(),label:'✨ '+fmt(ev.newSkillEnd)});
+  });
+  phases.sort((a,b)=>a.t-b.t);
+  const upcoming=phases.slice(1,4);
+  document.getElementById('fsNext').textContent=upcoming.length?'Далее: '+upcoming.map(p=>p.label).join(' · '):'';
+  const dots=document.getElementById('fsDots');
+  dots.innerHTML=phases.slice(0,5).map((p,i)=>`<div class="fs-timer-dot${i===0?' active':''}" title="${p.label}"></div>`).join('');
+}
+
+// CSV EXPORT
+function exportCSV(){
+  if(!allEvents.length){showToast('⚠ Нет расписания','var(--warn)');return;}
+  const rows=filteredRows.filter(r=>!r.dayLabel);
+  const fmtFull2=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+  const header='#,Дата,Запуск,Навык конец,КД конец,Сбор конец,Новый навык,Статус,Навык';
+  const lines=rows.map(r=>{
+    const st=journal[r.idx]||'';
+    const status=st==='done'?'Выполнено':st==='skipped'?'Пропущено':'Запланировано';
+    return [r.idx,isoDate(r.launch),fmtFull2(r.launch),fmtFull2(r.skillEnd),fmtFull2(r.cdEnd),fmtFull2(r.gatherEnd),fmtFull2(r.newSkillEnd),status,r.skillName||''].join(',');
+  });
+  const csv='\uFEFF'+[header,...lines].join('\n'); // BOM for Excel UTF-8
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='skill_schedule.csv'; a.click();
+  showToast('✓ CSV скачан ('+rows.length+' строк)');
+}
+
+// PWA
+let deferredInstall=null;
+function setupPWA(){
+  const m={name:'Skill Timer',short_name:'SkillTimer',start_url:'.',display:'standalone',background_color:'#0a0f1e',theme_color:'#0a0f1e',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0f1e'/%3E%3Ctext y='.9em' font-size='80' x='10'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E",sizes:'192x192',type:'image/svg+xml'}]};
+  const blob=new Blob([JSON.stringify(m)],{type:'application/json'});
+  document.getElementById('pwaManifest').href=URL.createObjectURL(blob);
+  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;document.getElementById('pwaBanner').classList.add('show');});
+  window.addEventListener('appinstalled',()=>{document.getElementById('pwaBanner').classList.remove('show');showToast('✓ Приложение установлено');});
+}
+function installPWA(){
+  if(!deferredInstall){showToast('Используй меню браузера \u2192 Добавить на экран');return;}
+  deferredInstall.prompt();
+  deferredInstall.userChoice.then(r=>{if(r.outcome==='accepted')showToast('✓ Установлено!');deferredInstall=null;});
+}
+function registerSW(){
+  if(!('serviceWorker'in navigator)) return;
+  const code=`const C='st-v5';self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll([self.location.href]))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k))))));`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([code],{type:'application/javascript'}))).catch(()=>{});
+}
+</script>
+</body>
+</html>
