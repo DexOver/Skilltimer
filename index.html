@@ -414,7 +414,7 @@ tbody tr:hover{background:rgba(0,212,255,0.04)}
   <div class="vscroll-outer">
     <div class="vscroll-wrap" id="vscrollWrap">
       <table>
-        <thead><tr><th>#</th><th>Запуск</th><th>Навык■</th><th>КД■</th><th>Сбор■</th><th>Новый</th><th>✓</th></tr></thead>
+        <thead><tr><th>#</th><th>Запуск</th><th>Навык■</th><th>КД■</th><th>Сбор■</th><th>Новый</th><th>✓</th><th></th></tr></thead>
         <tbody id="vtbody"></tbody>
       </table>
     </div>
@@ -696,6 +696,34 @@ function markSkipped(idx){
   journal[idx]='skipped'; saveJournal(); updateDoneCount();
   if(currentTab==='journal') renderJournal(); vsLastStart=-1; renderVisible();
 }
+
+function deleteEvent(idx){
+  // Remove from eventsByDay
+  for(const dk of Object.keys(eventsByDay)){
+    const arr=eventsByDay[dk];
+    const i=arr.findIndex(e=>e.idx===idx);
+    if(i!==-1){ arr.splice(i,1); if(!arr.length) delete eventsByDay[dk]; break; }
+  }
+  // Remove from allEvents (by matching time)
+  const flat=Object.values(eventsByDay).flat();
+  allEvents=flat.map(e=>e.launch).sort((a,b)=>a-b);
+  // Rebuild allRows
+  allRows=[]; let lastDay='';
+  const sorted=flat.sort((a,b)=>a.launch-b.launch);
+  sorted.forEach(ev=>{
+    const dk=ev.launch.toDateString();
+    if(dk!==lastDay){lastDay=dk;allRows.push({dayLabel:fmtDate(ev.launch)+' · '+ev.launch.toLocaleDateString('ru-RU',{weekday:'short'})});}
+    allRows.push(ev);
+  });
+  // Remove from journal if present
+  delete journal[idx]; saveJournal();
+  filteredRows=allRows;
+  document.getElementById('statTotal').textContent=allEvents.length;
+  document.getElementById('countBadge').textContent=allEvents.length;
+  updateDoneCount();
+  vsLastStart=-1; renderVisible(); startCountdown();
+  showToast('🗑 Запуск #'+idx+' удалён','var(--warn)');
+}
 function updateDoneCount(){
   const n=Object.values(journal).filter(v=>v==='done').length;
   document.getElementById('statDone').textContent=n||'\u2014';
@@ -780,17 +808,17 @@ function renderVisible(){
   if(startIdx===vsLastStart&&endIdx===vsLastEnd) return;
   vsLastStart=startIdx; vsLastEnd=endIdx;
   let padBot=0; for(let i=endIdx;i<rows.length;i++) padBot+=(rows[i].dayLabel?SEP_H:ROW_H);
-  let html=`<tr style="height:${padTop}px"><td colspan="7" style="padding:0;border:none"></td></tr>`;
+  let html=`<tr style="height:${padTop}px"><td colspan="8" style="padding:0;border:none"></td></tr>`;
   for(let i=startIdx;i<endIdx;i++){
     const r=rows[i];
-    if(r.dayLabel){html+=`<tr class="day-sep"><td colspan="7">📅 ${r.dayLabel}</td></tr>`;continue;}
+    if(r.dayLabel){html+=`<tr class="day-sep"><td colspan="8">📅 ${r.dayLabel}</td></tr>`;continue;}
     const st=journal[r.idx];
     const dot=r.color?`<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${r.color};margin-right:4px;vertical-align:middle"></span>`:'';
     const cls=st==='done'?'row-done':st==='skipped'?'row-skipped':'';
     const statusHtml=st==='done'?'✅':st==='skipped'?'⏭':'·';
-    html+=`<tr class="${cls}"><td class="num-cell">${r.idx}</td><td class="launch-cell" data-idx="${r.idx}" onclick="editLaunch(${r.idx},new Date(${r.launch.getTime()}))" title="Изменить время запуска" style="cursor:pointer">${dot}${fmt(r.launch)}</td><td class="skill-cell">${fmt(r.skillEnd)}</td><td class="cd-cell">${fmt(r.cdEnd)}</td><td class="gather-cell">${fmt(r.gatherEnd)}</td><td class="newskill-cell">${fmt(r.newSkillEnd)}</td><td class="status-cell" onclick="markDone(${r.idx})" title="Отметить">${statusHtml}</td></tr>`;
+    html+=`<tr class="${cls}"><td class="num-cell">${r.idx}</td><td class="launch-cell" data-idx="${r.idx}" onclick="editLaunch(${r.idx},new Date(${r.launch.getTime()}))" title="Изменить время запуска" style="cursor:pointer">${dot}${fmt(r.launch)}</td><td class="skill-cell">${fmt(r.skillEnd)}</td><td class="cd-cell">${fmt(r.cdEnd)}</td><td class="gather-cell">${fmt(r.gatherEnd)}</td><td class="newskill-cell">${fmt(r.newSkillEnd)}</td><td class="status-cell" onclick="markDone(${r.idx})" title="Отметить">${statusHtml}</td><td style="text-align:center;padding:4px"><button onclick="deleteEvent(${r.idx})" title="Удалить запуск" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:2px 6px;border-radius:4px;transition:color .15s" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='var(--muted)'">✕</button></td></tr>`;
   }
-  html+=`<tr style="height:${padBot}px"><td colspan="7" style="padding:0;border:none"></td></tr>`;
+  html+=`<tr style="height:${padBot}px"><td colspan="8" style="padding:0;border:none"></td></tr>`;
   tbody.innerHTML=html;
 }
 function onSearch(){
