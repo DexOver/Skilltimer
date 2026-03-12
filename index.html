@@ -121,8 +121,7 @@ tbody tr:hover{background:rgba(0,212,255,0.04)}
 .day-sep td{background:var(--bg2);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:2px;padding:4px 10px;border-top:1px solid var(--border);font-family:'Rajdhani',sans-serif;font-weight:600}
 .row-done td:not(.status-cell){opacity:.5}.row-done .launch-cell{text-decoration:line-through}
 .row-skipped td:not(.status-cell){opacity:.4}.row-skipped .launch-cell{text-decoration:line-through;color:var(--warn)}
-.notif-banner{display:flex;align-items:center;gap:10px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:9px;padding:10px 13px;margin-bottom:10px;font-size:13px;color:var(--accent3)}
-.notif-banner.denied{background:rgba(248,113,113,0.1);border-color:rgba(248,113,113,0.3);color:#f87171}
+
 .chart-bar-wrap{display:flex;flex-direction:column;gap:5px;margin-top:8px}
 .chart-bar-row{display:flex;align-items:center;gap:8px}
 .chart-bar-label{width:65px;color:var(--muted);font-family:'Share Tech Mono',monospace;font-size:10px;flex-shrink:0;text-align:right}
@@ -250,7 +249,6 @@ tbody tr:hover{background:rgba(0,212,255,0.04)}
   <div class="header-right">
     <div class="now-time" id="nowClock"></div>
     <button class="icon-btn" onclick="openFsTimer()" title="Полноэкранный таймер" style="font-size:12px;letter-spacing:0">FS</button>
-    <button class="icon-btn" id="notifBtn" onclick="toggleNotifications()" title="Уведомления">🔔</button>
     <button class="icon-btn" onclick="openThemePicker()" title="Тема">🎨</button>
   </div>
 </header>
@@ -261,7 +259,6 @@ tbody tr:hover{background:rgba(0,212,255,0.04)}
   <button class="icon-btn" style="width:24px;height:24px;font-size:11px;flex-shrink:0" onclick="document.getElementById('pwaBanner').classList.remove('show')">✕</button>
 </div>
 
-<div class="notif-banner" id="notifBanner" style="display:none"></div>
 
 <div class="ls-wrap">
 <div class="ls-left">
@@ -463,7 +460,6 @@ let SKILL=6,COOLDOWN=11;
 let allEvents=[],allRows=[],filteredRows=[],eventsByDay={};
 let vsLastStart=-1,vsLastEnd=-1,calYear,calMonth;
 let isDark=true,currentTheme='dark';
-let notifEnabled=false,scheduledNotifs=[];
 let countdownTimer=null,multiSkills=[],currentTab='schedule';
 let journal={};
 
@@ -685,7 +681,7 @@ function _buildEvents(defs,start,days,skipNight){
   vsLastStart=-1; vsLastEnd=-1; document.getElementById('vscrollWrap').scrollTop=0;
   renderVisible(); buildHeatmap();
   calYear=allEvents[0].getFullYear(); calMonth=allEvents[0].getMonth();
-  renderCalendar(); startCountdown(); scheduleNotifications(); updateDoneCount();
+  renderCalendar(); startCountdown(); updateDoneCount();
   if(defs.length===1) showToast('✓ '+allEvents.length+' запусков на '+days+' дней');
 }
 
@@ -998,20 +994,6 @@ function tickCountdown(){
   document.getElementById('countdownBar').style.width=Math.max(0,Math.min(100,100-diff/(3600000*(SKILL+COOLDOWN+(GATHER_MAX+NEW_SKILL_COLLECT)/60))*100))+'%';
 }
 
-// NOTIFICATIONS
-function toggleNotifications(){
-  if(!('Notification'in window)){showToast('⚠ Не поддерживается','var(--warn)');return;}
-  if(Notification.permission==='denied'){showBanner('🔕 Уведомления заблокированы',true);return;}
-  if(!notifEnabled){Notification.requestPermission().then(p=>{if(p==='granted'){notifEnabled=true;document.getElementById('notifBtn').textContent='🔔';showBanner('🔔 Уведомления включены');scheduleNotifications();}else showBanner('🔕 Отклонено',true);});}
-  else{notifEnabled=false;document.getElementById('notifBtn').textContent='🔕';showBanner('🔕 Отключены',true);}
-}
-function showBanner(msg,denied){const b=document.getElementById('notifBanner');b.innerHTML=msg;b.className='notif-banner'+(denied?' denied':'');b.style.display='flex';setTimeout(()=>b.style.display='none',5000);}
-function scheduleNotifications(){
-  if(!notifEnabled||Notification.permission!=='granted') return;
-  scheduledNotifs.forEach(t=>clearTimeout(t)); scheduledNotifs=[];
-  const now=Date.now(),ADV=5*60000;
-  Object.values(eventsByDay).flat().slice(0,100).forEach(ev=>{const gt=ev.cdEnd.getTime()-ADV;if(gt>now) scheduledNotifs.push(setTimeout(()=>{if(notifEnabled) new Notification('⚡ Skill Timer',{body:'Через 5 мин \u2014 '+fmt(ev.cdEnd)+' конец КД!'});},gt-now));});
-}
 
 // EXPORT PNG
 function exportPNG(){
