@@ -82,11 +82,11 @@ input[type="time"]::-webkit-calendar-picker-indicator,input[type="date"]::-webki
 .preset-chip{padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
 .preset-chip:hover{border-color:var(--accent);color:var(--accent)}
 .skill-row{display:grid;grid-template-columns:1fr 80px 80px 32px;gap:7px;align-items:end}
-.timeline-card{display:none}
-canvas{width:100%;display:block;border-radius:6px;background:var(--bg2)}
-.legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:7px}
-.legend-item{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
-.legend-dot{width:8px;height:8px;border-radius:50%}
+
+
+
+
+
 .heatmap-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
 .heatmap-grid{display:inline-flex;gap:3px}
 .heatmap-col{display:flex;flex-direction:column;gap:3px}
@@ -117,7 +117,7 @@ thead tr{background:var(--bg2);position:sticky;top:0;z-index:2}
 th{padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);white-space:nowrap;font-weight:600}
 td{padding:7px 10px;font-family:'Share Tech Mono',monospace;font-size:12px;border-top:1px solid var(--border);white-space:nowrap}
 tbody tr:hover{background:rgba(0,212,255,0.04)}
-.num-cell{color:var(--muted);font-size:10px}.launch-cell{color:var(--accent)}.skill-cell{color:#a78bfa}.cd-cell{color:var(--warn)}.gather-cell{color:var(--accent3)}.newskill-cell{color:var(--pink)}.status-cell{text-align:center;cursor:pointer}
+.num-cell{color:var(--muted);font-size:10px}.launch-cell{color:var(--accent)}.launch-cell:hover{text-decoration:underline dotted var(--accent);text-underline-offset:3px}.skill-cell{color:#a78bfa}.cd-cell{color:var(--warn)}.gather-cell{color:var(--accent3)}.newskill-cell{color:var(--pink)}.status-cell{text-align:center;cursor:pointer}
 .day-sep td{background:var(--bg2);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:2px;padding:4px 10px;border-top:1px solid var(--border);font-family:'Rajdhani',sans-serif;font-weight:600}
 .row-done td:not(.status-cell){opacity:.5}.row-done .launch-cell{text-decoration:line-through}
 .row-skipped td:not(.status-cell){opacity:.4}.row-skipped .launch-cell{text-decoration:line-through;color:var(--warn)}
@@ -197,7 +197,7 @@ tbody tr:hover{background:rgba(0,212,255,0.04)}
   .ls-left,.ls-right{display:flex;flex-direction:column;gap:9px}
   .stats-bar,.card,.timeline-card,.table-card,.countdown-widget{margin-bottom:0}
   .controls-grid{grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
-  canvas{height:42px !important} .vscroll-wrap{height:250px}
+.vscroll-wrap{height:250px}
   th{font-size:9px;padding:5px 8px} td{font-size:11px;padding:5px 8px} .countdown-time{font-size:28px}
 }
 /* Tablet landscape */
@@ -208,40 +208,32 @@ tbody tr:hover{background:rgba(0,212,255,0.04)}
 }
 /* Desktop 1200-1599px */
 @media(min-width:1200px){
-  .ls-wrap{display:flex;flex-direction:column;align-items:center;gap:24px}
-  .ls-left,.ls-right{display:flex;flex-direction:column;gap:14px;width:100%;max-width:860px}
+  .ls-wrap{display:grid;grid-template-columns:380px 1fr;gap:24px;align-items:start}
+  .ls-left{display:flex;flex-direction:column;gap:14px}
+  .ls-right{display:flex;flex-direction:column;gap:14px}
   .stats-bar,.card,.timeline-card,.table-card,.countdown-widget{margin-bottom:0}
-  .stats-bar{max-width:860px;width:100%;margin-left:auto;margin-right:auto;margin-bottom:22px;gap:16px}
-  .tabs{max-width:860px;width:100%;margin-left:auto;margin-right:auto;margin-bottom:20px}
-  .catchup-banner,.notif-banner{max-width:860px;margin-left:auto;margin-right:auto}
-  .countdown-widget{max-width:860px;width:100%;margin-left:auto;margin-right:auto;margin-bottom:20px}
-  .controls-grid{grid-template-columns:repeat(4,1fr) !important}
+  .stats-bar{margin-bottom:16px;gap:12px}
+  .tabs{margin-bottom:14px}
+  .controls-grid{grid-template-columns:repeat(2,1fr) !important}
   .stat-val{font-size:24px}
-  .tab{font-size:14px;padding:11px 14px}
-  .btn{font-size:14px;padding:13px 14px}
-  .field-label{font-size:12px;letter-spacing:1.5px}
+  .tab{font-size:13px;padding:10px 8px}
+  .btn{font-size:13px;padding:12px 10px}
+  .field-label{font-size:11px;letter-spacing:1px}
   input[type="time"],input[type="number"],input[type="text"],input[type="date"]{font-size:15px;padding:10px 12px}
-  .vscroll-wrap{height:520px}
-  canvas{height:100px !important}
-  .countdown-time{font-size:52px}
-  .card{padding:18px}
+  .vscroll-wrap{height:70vh;min-height:400px}
+  .countdown-time{font-size:44px}
+  .card{padding:16px}
 }
 /* Wide desktop 1600px+ */
 @media(min-width:1600px){
-  .ls-wrap{display:flex;flex-direction:column;align-items:center;gap:30px}
-  .ls-left,.ls-right{width:100%;max-width:960px}
-  .stats-bar{max-width:960px;width:100%;margin-left:auto;margin-right:auto}
-  .tabs{max-width:960px;width:100%;margin-left:auto;margin-right:auto}
-  .catchup-banner,.notif-banner{max-width:960px;margin-left:auto;margin-right:auto}
-  .countdown-widget{max-width:960px;width:100%;margin-left:auto;margin-right:auto}
-  .controls-grid{grid-template-columns:repeat(4,1fr) !important}
+  .ls-wrap{grid-template-columns:440px 1fr;gap:32px}
+  .controls-grid{grid-template-columns:repeat(2,1fr) !important}
   .stat-val{font-size:28px}
   .tab{font-size:15px;padding:12px 18px}
   .btn{font-size:15px;padding:15px 16px}
   .field-label{font-size:13px}
   input[type="time"],input[type="number"],input[type="text"],input[type="date"]{font-size:16px;padding:12px 14px}
-  .vscroll-wrap{height:600px}
-  canvas{height:120px !important}
+  .vscroll-wrap{height:75vh}
   .countdown-time{font-size:62px}
   .card{padding:22px}
   h1{font-size:30px}
@@ -271,6 +263,9 @@ tbody tr:hover{background:rgba(0,212,255,0.04)}
 
 <div class="notif-banner" id="notifBanner" style="display:none"></div>
 
+<div class="ls-wrap">
+<div class="ls-left">
+
 <div class="stats-bar">
   <div class="stat-card"><div class="stat-val" id="statSkill">6h</div><div class="stat-label">Навык</div></div>
   <div class="stat-card"><div class="stat-val" id="statCD">11h</div><div class="stat-label">Кулдаун</div></div>
@@ -298,9 +293,6 @@ tbody tr:hover{background:rgba(0,212,255,0.04)}
 </div>
 
 <div class="catchup-banner" id="catchupBanner"></div>
-
-<div class="ls-wrap">
-<div class="ls-left">
 
 <!-- SCHEDULE -->
 <div id="tabSchedule">
@@ -408,18 +400,6 @@ tbody tr:hover{background:rgba(0,212,255,0.04)}
 </div><!-- /ls-left -->
 <div class="ls-right">
 
-<div class="card timeline-card" id="timelineCard">
-  <div class="section-title"><span class="live-dot"></span> Временная шкала</div>
-  <canvas id="chart" style="height:60px"></canvas>
-  <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div>Запуск</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Навык</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Кулдаун</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Сбор</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#f472b6"></div>Новый</div>
-  </div>
-</div>
-
 <div class="card" id="heatmapCard" style="display:none">
   <div class="section-title">📅 Тепловая карта</div>
   <div class="heatmap-wrap"><div class="heatmap-grid" id="heatmapGrid"></div></div>
@@ -490,8 +470,8 @@ let journal={};
 window.addEventListener('DOMContentLoaded',()=>{
   const today=new Date().toISOString().slice(0,10);
   const dp=document.getElementById('startDate');
-  dp.value=today; dp.min=today;
-  dp.addEventListener('change',()=>{if(dp.value<today)dp.value=today;});
+  dp.value=today;
+  // no date restriction - past dates allowed
   loadSettings(); renderPresets(); initSkillList(); startClock();
   document.getElementById('vscrollWrap').onscroll=renderVisible;
   setupPWA(); registerSW();
@@ -530,7 +510,7 @@ function applyTheme(id){
   const t=THEMES.find(x=>x.id===id);
   document.querySelector('meta[name="theme-color"]').content=t.bg;
   isDark=!['arctic','sand'].includes(id);
-  if(allEvents.length){drawChart();buildHeatmap();}
+  if(allEvents.length){buildHeatmap();}
   closeThemePicker(null); saveSettings(true); showToast('✓ Тема "'+t.label+'"');
 }
 
@@ -578,7 +558,7 @@ function loadSettings(){
   try{
     const s=JSON.parse(localStorage.getItem('skillTimerSettings')||'null'); if(!s) return;
     const today=new Date().toISOString().slice(0,10);
-    if(s.startDate&&s.startDate>=today) document.getElementById('startDate').value=s.startDate;
+    if(s.startDate) document.getElementById('startDate').value=s.startDate;
     if(s.startTime) document.getElementById('startTime').value=s.startTime;
     if(s.days) document.getElementById('daysCount').value=s.days;
     if(s.skill) document.getElementById('skillHours').value=s.skill;
@@ -699,11 +679,11 @@ function _buildEvents(defs,start,days,skipNight){
   document.getElementById('statCD').textContent=(defs[0].cd)+'h';
   document.getElementById('statTotal').textContent=allEvents.length;
   document.getElementById('countBadge').textContent=allEvents.length;
-  ['timelineCard','calCard','heatmapCard','tableCard'].forEach(id=>document.getElementById(id).style.display='block');
+  ['calCard','heatmapCard','tableCard'].forEach(id=>document.getElementById(id).style.display='block');
   document.getElementById('countdownWidget').style.display='block';
   document.getElementById('searchBox').value='';
   vsLastStart=-1; vsLastEnd=-1; document.getElementById('vscrollWrap').scrollTop=0;
-  renderVisible(); drawChart(); buildHeatmap();
+  renderVisible(); buildHeatmap();
   calYear=allEvents[0].getFullYear(); calMonth=allEvents[0].getMonth();
   renderCalendar(); startCountdown(); scheduleNotifications(); updateDoneCount();
   if(defs.length===1) showToast('✓ '+allEvents.length+' запусков на '+days+' дней');
@@ -812,7 +792,7 @@ function renderVisible(){
     const dot=r.color?`<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${r.color};margin-right:4px;vertical-align:middle"></span>`:'';
     const cls=st==='done'?'row-done':st==='skipped'?'row-skipped':'';
     const statusHtml=st==='done'?'✅':st==='skipped'?'⏭':'·';
-    html+=`<tr class="${cls}"><td class="num-cell">${r.idx}</td><td class="launch-cell">${dot}${fmt(r.launch)}</td><td class="skill-cell">${fmt(r.skillEnd)}</td><td class="cd-cell">${fmt(r.cdEnd)}</td><td class="gather-cell">${fmt(r.gatherEnd)}</td><td class="newskill-cell">${fmt(r.newSkillEnd)}</td><td class="status-cell" onclick="markDone(${r.idx})" title="Отметить">${statusHtml}</td></tr>`;
+    html+=`<tr class="${cls}"><td class="num-cell">${r.idx}</td><td class="launch-cell" data-idx="${r.idx}" onclick="editLaunch(${r.idx},new Date(${r.launch.getTime()}))" title="Изменить время запуска" style="cursor:pointer">${dot}${fmt(r.launch)}</td><td class="skill-cell">${fmt(r.skillEnd)}</td><td class="cd-cell">${fmt(r.cdEnd)}</td><td class="gather-cell">${fmt(r.gatherEnd)}</td><td class="newskill-cell">${fmt(r.newSkillEnd)}</td><td class="status-cell" onclick="markDone(${r.idx})" title="Отметить">${statusHtml}</td></tr>`;
   }
   html+=`<tr style="height:${padBot}px"><td colspan="7" style="padding:0;border:none"></td></tr>`;
   tbody.innerHTML=html;
@@ -823,35 +803,8 @@ function onSearch(){
   vsLastStart=-1; vsLastEnd=-1; document.getElementById('vscrollWrap').scrollTop=0; renderVisible();
 }
 
-// CHART
-function drawChart(){
-  const canvas=document.getElementById('chart'),dpr=window.devicePixelRatio||1,W=canvas.offsetWidth,H=60;
-  canvas.width=W*dpr; canvas.height=H*dpr; canvas.style.width=W+'px'; canvas.style.height=H+'px';
-  const ctx=canvas.getContext('2d'); ctx.scale(dpr,dpr);
-  if(!allEvents.length) return;
-  const tMin=allEvents[0].getTime(),tMax=allEvents[allEvents.length-1].getTime()+(SKILL+COOLDOWN+(GATHER_MAX+NEW_SKILL_COLLECT)/60)*3600000,range=tMax-tMin||1;
-  const toX=t=>((t-tMin)/range)*W;
-  const step=allEvents.length>400?Math.ceil(allEvents.length/400):1;
-  for(let i=0;i<allEvents.length;i+=step){
-    const t0=allEvents[i].getTime();
-    const x0=toX(t0),x1=toX(t0+SKILL*3600000),x2=toX(t0+(SKILL+COOLDOWN)*3600000),x3=toX(t0+(SKILL+COOLDOWN+GATHER_MAX/60)*3600000),x4=toX(t0+(SKILL+COOLDOWN+(GATHER_MAX+NEW_SKILL_COLLECT)/60)*3600000);
-    ctx.fillStyle='rgba(167,139,250,0.5)'; ctx.fillRect(x0,15,Math.max(x1-x0,1),18);
-    ctx.fillStyle='rgba(245,158,11,0.4)'; ctx.fillRect(x1,15,Math.max(x2-x1,1),18);
-    ctx.fillStyle='rgba(16,185,129,0.5)'; ctx.fillRect(x2,15,Math.max(x3-x2,1),18);
-    ctx.fillStyle='rgba(244,114,182,0.5)'; ctx.fillRect(x3,15,Math.max(x4-x3,1),18);
-    ctx.beginPath(); ctx.arc(x0,24,2.5,0,Math.PI*2);
-    ctx.fillStyle='#00d4ff'; ctx.shadowColor='#00d4ff'; ctx.shadowBlur=5; ctx.fill(); ctx.shadowBlur=0;
-  }
-  const now=Date.now();
-  if(now>=tMin&&now<=tMax){
-    const nx=toX(now);
-    ctx.beginPath(); ctx.moveTo(nx,0); ctx.lineTo(nx,H);
-    ctx.strokeStyle='rgba(255,255,255,0.7)'; ctx.lineWidth=1.5; ctx.setLineDash([3,3]); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle='rgba(255,255,255,.9)'; ctx.font='9px monospace'; ctx.fillText('\u25bc',nx-4,10);
-  }
-}
-window.addEventListener('resize',()=>{if(allEvents.length){drawChart();vsLastStart=-1;renderVisible();}});
-setInterval(()=>{if(allEvents.length)drawChart();},30000);
+window.addEventListener('resize',()=>{if(allEvents.length){vsLastStart=-1;renderVisible();}});
+
 
 // HEATMAP
 function buildHeatmap(){
@@ -933,6 +886,51 @@ function findNextEvent(){
   phases.sort((a,b)=>a.t-b.t); return phases[0];
 }
 let countdownPaused=false, pausedAt=0, pauseOffset=0;
+// launch time overrides: idx -> Date
+let launchOverrides={};
+
+function editLaunch(idx, origDate){
+  // Find td by data-idx attribute
+  const td=document.querySelector('#vtbody td.launch-cell[data-idx="'+idx+'"]');
+  if(!td) return;
+  const timeVal=pad2(origDate.getHours())+':'+pad2(origDate.getMinutes());
+  td.innerHTML='<input type="time" value="'+timeVal+'" '+
+    'style="font-size:15px;width:90px;background:var(--bg2);color:var(--accent);border:1px solid var(--accent);'+
+    'border-radius:5px;padding:3px 6px;font-family:Share Tech Mono,monospace;outline:none;-webkit-appearance:none" '+
+    'onchange="applyLaunchEdit('+idx+',this.value)" '+
+    'onblur="vsLastStart=-1;renderVisible()" '+
+    'onclick="event.stopPropagation()">';
+  const inp=td.querySelector('input');
+  if(inp){ inp.focus(); inp.click(); }
+}
+
+function applyLaunchEdit(idx, timeVal){
+  const ev=Object.values(eventsByDay).flat().find(e=>e.idx===idx);
+  if(!ev) return;
+  const [hh,mm]=timeVal.split(':').map(Number);
+  const newLaunch=new Date(ev.launch);
+  newLaunch.setHours(hh,mm,0,0);
+  // Recalculate this event's phases
+  const sH=SKILL, cH=COOLDOWN;
+  ev.launch=newLaunch;
+  ev.skillEnd=new Date(newLaunch.getTime()+sH*3600000);
+  ev.cdEnd=new Date(ev.skillEnd.getTime()+cH*3600000);
+  ev.gatherEnd=new Date(ev.cdEnd.getTime()+GATHER_MAX*60000);
+  ev.newSkillEnd=new Date(ev.gatherEnd.getTime()+NEW_SKILL_COLLECT*60000);
+  // Also update allRows
+  const row=allRows.find(r=>r.idx===idx);
+  if(row){row.launch=ev.launch;row.skillEnd=ev.skillEnd;row.cdEnd=ev.cdEnd;row.gatherEnd=ev.gatherEnd;row.newSkillEnd=ev.newSkillEnd;}
+  // Update allEvents
+  const ai=allEvents.findIndex((d,i)=>{
+    const flat=Object.values(eventsByDay).flat();
+    return flat[i]&&flat[i].idx===idx;
+  });
+  launchOverrides[idx]=newLaunch;
+  vsLastStart=-1; renderVisible(); startCountdown();
+  showToast('✓ Время #'+idx+' изменено');
+}
+
+
 
 function startCountdown(){
   if(countdownTimer) clearInterval(countdownTimer);
@@ -974,7 +972,7 @@ function resetCountdown(){
   countdownTimer=null; countdownPaused=false; pauseOffset=0;
   allEvents=[]; allRows=[]; filteredRows=[]; eventsByDay={};
   journal={}; saveJournal(); updateDoneCount();
-  ['timelineCard','calCard','heatmapCard','tableCard'].forEach(id=>document.getElementById(id).style.display='none');
+  ['calCard','heatmapCard','tableCard'].forEach(id=>document.getElementById(id).style.display='none');
   document.getElementById('countdownWidget').style.display='none';
   document.getElementById('vtbody').innerHTML='';
   document.getElementById('statTotal').textContent='—';
